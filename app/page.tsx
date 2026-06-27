@@ -61,11 +61,14 @@ export default function Home() {
         )}
       </section>
 
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         <Button asChild>
-          <a href="/oportunidades">Ver mapa de oportunidades</a>
+          <a href="/onboarding">Empezar (primer valor en 3 pasos)</a>
         </Button>
         <Button variant="outline" asChild>
+          <a href="/oportunidades">Ver mapa de oportunidades</a>
+        </Button>
+        <Button variant="ghost" asChild>
           <a
             href="https://github.com/sebacifuentes-coder/Sponsorship"
             target="_blank"

@@ -15,6 +15,9 @@ import { SeedPublicDataAdapter } from '@/adapters/publicdata/seed-public-data-ad
 import { normalizarSenal, type SenalPublica } from '@/core/intelligence/senal';
 import type { PropiedadId } from '@/core/shared/tenant';
 
+// La constante vive en el módulo client-safe; se re-exporta por compatibilidad.
+export { DEMO_PROPIEDAD_ID } from '@/lib/intelligence/clubes-semilla';
+
 export async function leerSenalesPublicas(propiedadId: PropiedadId): Promise<SenalPublica[]> {
   if (isSupabaseConfigured()) {
     const supabase = await createClient();
@@ -26,6 +29,3 @@ export async function leerSenalesPublicas(propiedadId: PropiedadId): Promise<Sen
   const ahora = new Date().toISOString();
   return crudas.map((c) => normalizarSenal(c, propiedadId, ahora));
 }
-
-/** Propiedad de demostración para el modo local sin Supabase. */
-export const DEMO_PROPIEDAD_ID = '00000000-0000-4000-8000-000000000001';
