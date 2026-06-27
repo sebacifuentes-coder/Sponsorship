@@ -2,4 +2,5 @@
 export * from '@/core/context/derecho';
 export * from '@/core/context/adn-marca';
 export * from '@/core/context/objetivos';
+export * from '@/core/context/contexto-adicional';
 export * from '@/core/context/repository';

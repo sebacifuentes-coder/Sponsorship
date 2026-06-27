@@ -11,6 +11,10 @@ import type { MarcaId, PropiedadId } from '@/core/shared/tenant';
 import type { DerechoContratado, DerechoEntrada } from '@/core/context/derecho';
 import type { AdnEntrada, AdnMarca } from '@/core/context/adn-marca';
 import type { ObjetivoComunicacion } from '@/core/context/objetivos';
+import type {
+  ContextoAdicional,
+  ContextoAdicionalEntrada,
+} from '@/core/context/contexto-adicional';
 
 export interface RepositorioDerechos {
   /** Lista los derechos contratados de una Marca. */
@@ -147,5 +151,43 @@ export class RepositorioObjetivosEnMemoria implements RepositorioObjetivos {
     };
     this.porMarca.set(marcaId, registro);
     return { ...registro, objetivos: [...registro.objetivos] };
+  }
+}
+
+export interface RepositorioContextoAdicional {
+  /** Contexto adicional de una Marca, o null si no se ha capturado. */
+  obtenerContexto(marcaId: MarcaId): Promise<ContextoAdicional | null>;
+  /** Guarda (upsert) el contexto adicional. AD-7: muta el estado aquí. */
+  guardarContexto(
+    marcaId: MarcaId,
+    propiedadId: PropiedadId,
+    entrada: ContextoAdicionalEntrada,
+  ): Promise<ContextoAdicional>;
+}
+
+/** Implementación en memoria del contexto adicional (tests / demo — AD-1). */
+export class RepositorioContextoAdicionalEnMemoria implements RepositorioContextoAdicional {
+  private readonly porMarca = new Map<MarcaId, ContextoAdicional>();
+
+  constructor(private readonly ahora: () => string = () => new Date().toISOString()) {}
+
+  async obtenerContexto(marcaId: MarcaId): Promise<ContextoAdicional | null> {
+    const ctx = this.porMarca.get(marcaId);
+    return ctx ? { ...ctx } : null;
+  }
+
+  async guardarContexto(
+    marcaId: MarcaId,
+    propiedadId: PropiedadId,
+    entrada: ContextoAdicionalEntrada,
+  ): Promise<ContextoAdicional> {
+    const ctx: ContextoAdicional = {
+      marcaId,
+      propiedadId,
+      ...entrada,
+      actualizadoEn: this.ahora(),
+    };
+    this.porMarca.set(marcaId, ctx);
+    return { ...ctx };
   }
 }

@@ -77,6 +77,9 @@ export default function Home() {
         <Button variant="outline" asChild>
           <a href="/contexto/objetivos">Objetivos</a>
         </Button>
+        <Button variant="outline" asChild>
+          <a href="/contexto/adicional">Contexto adicional</a>
+        </Button>
         <Button variant="ghost" asChild>
           <a
             href="https://github.com/sebacifuentes-coder/Sponsorship"

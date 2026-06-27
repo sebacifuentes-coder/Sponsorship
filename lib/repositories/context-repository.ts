@@ -9,8 +9,11 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { MarcaId, PropiedadId } from '@/core/shared/tenant';
 import type {
+  ContextoAdicional,
+  ContextoAdicionalEntrada,
   ObjetivosMarca,
   RepositorioAdnMarca,
+  RepositorioContextoAdicional,
   RepositorioDerechos,
   RepositorioObjetivos,
 } from '@/core/context';
@@ -216,5 +219,71 @@ export class SupabaseRepositorioObjetivos implements RepositorioObjetivos {
       throw new Error(`No se pudieron guardar los objetivos: ${error.message}`);
     }
     return objetivosADominio(data as FilaObjetivos);
+  }
+}
+
+interface FilaContexto {
+  marca_id: string;
+  propiedad_id: string;
+  audiencia_objetivo: string;
+  calendario: string;
+  productos_mensajes: string;
+  restricciones_marca: string;
+  mercados: string;
+  actualizado_en: string;
+}
+
+function contextoADominio(f: FilaContexto): ContextoAdicional {
+  return {
+    marcaId: f.marca_id,
+    propiedadId: f.propiedad_id,
+    audienciaObjetivo: f.audiencia_objetivo,
+    calendario: f.calendario,
+    productosMensajes: f.productos_mensajes,
+    restriccionesMarca: f.restricciones_marca,
+    mercados: f.mercados,
+    actualizadoEn: f.actualizado_en,
+  };
+}
+
+export class SupabaseRepositorioContextoAdicional implements RepositorioContextoAdicional {
+  constructor(private readonly supabase: SupabaseClient) {}
+
+  async obtenerContexto(marcaId: MarcaId): Promise<ContextoAdicional | null> {
+    const { data, error } = await this.supabase
+      .from('contexto_adicional')
+      .select('*')
+      .eq('marca_id', marcaId)
+      .maybeSingle();
+    if (error) {
+      throw new Error(`No se pudo leer el contexto adicional: ${error.message}`);
+    }
+    return data ? contextoADominio(data as FilaContexto) : null;
+  }
+
+  async guardarContexto(
+    marcaId: MarcaId,
+    propiedadId: PropiedadId,
+    entrada: ContextoAdicionalEntrada,
+  ): Promise<ContextoAdicional> {
+    const fila = {
+      marca_id: marcaId,
+      propiedad_id: propiedadId,
+      audiencia_objetivo: entrada.audienciaObjetivo,
+      calendario: entrada.calendario,
+      productos_mensajes: entrada.productosMensajes,
+      restricciones_marca: entrada.restriccionesMarca,
+      mercados: entrada.mercados,
+      actualizado_en: new Date().toISOString(),
+    };
+    const { data, error } = await this.supabase
+      .from('contexto_adicional')
+      .upsert(fila, { onConflict: 'marca_id' })
+      .select('*')
+      .single();
+    if (error) {
+      throw new Error(`No se pudo guardar el contexto adicional: ${error.message}`);
+    }
+    return contextoADominio(data as FilaContexto);
   }
 }

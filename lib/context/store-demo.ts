@@ -14,6 +14,7 @@
 
 import {
   RepositorioAdnMarcaEnMemoria,
+  RepositorioContextoAdicionalEnMemoria,
   RepositorioDerechosEnMemoria,
   RepositorioObjetivosEnMemoria,
 } from '@/core/context';
@@ -28,6 +29,7 @@ const claveGlobal = globalThis as unknown as {
   __derechosDemo__?: Promise<RepositorioDerechosEnMemoria>;
   __adnDemo__?: RepositorioAdnMarcaEnMemoria;
   __objetivosDemo__?: RepositorioObjetivosEnMemoria;
+  __contextoAdicionalDemo__?: RepositorioContextoAdicionalEnMemoria;
 };
 
 async function sembrar(repo: RepositorioDerechosEnMemoria): Promise<void> {
@@ -74,4 +76,12 @@ export function repositorioObjetivosDemo(): RepositorioObjetivosEnMemoria {
     claveGlobal.__objetivosDemo__ = new RepositorioObjetivosEnMemoria();
   }
   return claveGlobal.__objetivosDemo__;
+}
+
+/** Repositorio demo de contexto adicional (singleton de proceso). */
+export function repositorioContextoAdicionalDemo(): RepositorioContextoAdicionalEnMemoria {
+  if (!claveGlobal.__contextoAdicionalDemo__) {
+    claveGlobal.__contextoAdicionalDemo__ = new RepositorioContextoAdicionalEnMemoria();
+  }
+  return claveGlobal.__contextoAdicionalDemo__;
 }
