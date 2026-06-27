@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Validación PRD: Copiloto de Patrocinio Deportivo</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --surface: #ffffff;
+    --border: #e7e5e4;
+    --text: #1c1917;
+    --muted: #78716c;
+
+    --verdict-strong: #16a34a;
+    --verdict-adequate: #65a30d;
+    --verdict-thin: #d97706;
+    --verdict-broken: #dc2626;
+
+    --sev-low: #64748b;
+    --sev-medium: #ca8a04;
+    --sev-high: #ea580c;
+    --sev-critical: #dc2626;
+
+    --grade-exc: #16a34a;
+    --grade-good: #65a30d;
+    --grade-fair: #d97706;
+    --grade-poor: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 24px 64px; }
+
+  header.report-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .title h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .title .subtitle { color: var(--muted); font-size: 13px; margin-top: 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .grade {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: white;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+  .grade-excellent { background: var(--grade-exc); }
+  .grade-good { background: var(--grade-good); }
+  .grade-fair { background: var(--grade-fair); }
+  .grade-poor { background: var(--grade-poor); }
+
+  .synthesis {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--muted);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    font-size: 15.5px;
+  }
+  .synthesis p { margin: 0 0 10px; }
+  .synthesis p:last-child { margin-bottom: 0; }
+
+  .dimension-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .dim-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .dim-card .dim-name { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .dim-card .dim-verdict { font-size: 14px; font-weight: 600; }
+
+  section.dimension, section.reviewer-section { margin-bottom: 14px; }
+  section.dimension details, section.reviewer-section details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  section summary {
+    padding: 14px 20px;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  section summary::-webkit-details-marker { display: none; }
+  section summary::before {
+    content: "▸";
+    display: inline-block;
+    color: var(--muted);
+    transition: transform 0.15s ease;
+  }
+  section details[open] summary::before { transform: rotate(90deg); }
+  section summary h2 {
+    display: inline;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    flex: 1;
+  }
+  .verdict-pill {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: white;
+  }
+  .verdict-strong { background: var(--verdict-strong); }
+  .verdict-adequate { background: var(--verdict-adequate); }
+  .verdict-thin { background: var(--verdict-thin); }
+  .verdict-broken { background: var(--verdict-broken); }
+
+  .dim-body { padding: 4px 20px 18px; }
+  .dim-judgment { color: var(--text); font-size: 14.5px; }
+  .dim-judgment p { margin: 0 0 10px; }
+
+  .findings-list { padding: 0 20px 4px; }
+  article.finding {
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+  }
+  article.finding:first-child { border-top: none; }
+  article.finding header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .badge {
+    font-size: 10.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+  .badge-sev-low { background: rgba(100, 116, 139, 0.12); color: var(--sev-low); }
+  .badge-sev-medium { background: rgba(202, 138, 4, 0.14); color: var(--sev-medium); }
+  .badge-sev-high { background: rgba(234, 88, 12, 0.14); color: var(--sev-high); }
+  .badge-sev-critical { background: rgba(220, 38, 38, 0.14); color: var(--sev-critical); }
+  .finding-title { margin: 0; font-size: 15px; font-weight: 500; flex: 1; min-width: 200px; }
+  .finding-location { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; color: var(--muted); }
+  .finding-note, .finding-fix { margin-top: 6px; font-size: 14px; }
+  .finding-fix strong { color: var(--muted); font-weight: 500; }
+
+  .reviewer-source {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  .mechanical {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 24px;
+    font-size: 14px;
+  }
+  .mechanical h3 { margin: 0 0 10px; font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .mechanical ul { margin: 0; padding-left: 20px; }
+  .mechanical li { margin-bottom: 4px; color: var(--text); }
+
+  footer.report-footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  footer .meta { display: flex; gap: 24px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <header class="report-header">
+      <div class="title">
+        <h1>Copiloto de Patrocinio Deportivo — Reporte de Validación</h1>
+        <div class="subtitle">_bmad-output/planning-artifacts/prds/prd-MetodoBMAD-2026-06-27/prd.md (v2.1)</div>
+      </div>
+      <div class="grade grade-good">Good — con riesgos críticos de negocio abiertos</div>
+    </header>
+
+    <div class="synthesis">
+      <p>Como documento, este PRD es <strong>bueno y listo para alimentar el chain con gates</strong>. Sostiene una tesis nítida (visibilidad → efectividad demostrable), trata sus tensiones más peligrosas con honestidad inusual (sobre-atribución del lado del vendedor, el ciclo largo de los sponsors de LaLiga, la agencia como bloqueador, el choque TTFV↔integración enterprise) y las convierte en mecanismos verificables (FR-12, SM-C1, precondiciones P-1..P-5, registro de riesgos R-1..R-9). La rúbrica de 7 dimensiones da <strong>0 critical, 0 high y 2 medium</strong>, ambos en Done-ness y fácilmente corregibles antes de épicas. El salto frente a la v1 (Fair) es claro y sustantivo: lo que antes eran "supuestos" hoy son precondiciones con dueño, hay control duro del sesgo del vendedor, mercado/jurisdicción fijados (LaLiga/GDPR), y aparecen GTM, riesgos, competencia y foso. Por calidad de documento, el grade es <strong>Good</strong>.</p>
+      <p><strong>El revisor adversarial matiza materialmente ese veredicto.</strong> Su tesis es que <em>nombrar un riesgo no es mitigarlo</em>: la mayoría de los críticos previos siguen abiertos, solo que ahora con etiqueta de "precondición" o "[DECISIÓN PENDIENTE]". Levanta además un crítico nuevo de viabilidad legal —el beachhead recomendado de apuestas/iGaming está prohibido o severamente restringido en el fútbol español por el Real Decreto 958/2020 desde 2021— y una contradicción interna dura: el TTFV &lt;10 min solo puede cumplirse con datos de muestra (un demo vacío que rompe la promesa de valor diferencial) o exigiría datos reales del fan que el propio PRD declara bloqueados semanas por madurez de datos, diseño de clean room y base legal GDPR (P-4). A esto se suma que el círculo vicioso de atribución cobrable (H-5) sigue vivo para el grueso del mercado (Nivel 2), y que ninguna métrica del PRD prueba que alguien paga. Por eso el veredicto consolidado es <strong>Good (calidad de documento) con riesgos críticos de negocio y coherencia abiertos</strong>: el documento está bien construido y correctamente <em>gated</em>, pero su viabilidad comercial y legal sigue sin demostrarse y no debe leerse como luz verde a construir.</p>
+    </div>
+
+    <div class="dimension-summary">
+      <div class="dim-card">
+        <div class="dim-name">Decision-readiness</div>
+        <div class="dim-verdict" style="color: var(--verdict-strong)">strong</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Substance over theater</div>
+        <div class="dim-verdict" style="color: var(--verdict-strong)">strong</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Strategic coherence</div>
+        <div class="dim-verdict" style="color: var(--verdict-strong)">strong</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Done-ness clarity</div>
+        <div class="dim-verdict" style="color: var(--verdict-adequate)">adequate</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Scope honesty</div>
+        <div class="dim-verdict" style="color: var(--verdict-strong)">strong</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Downstream usability</div>
+        <div class="dim-verdict" style="color: var(--verdict-strong)">strong</div>
+      </div>
+      <div class="dim-card">
+        <div class="dim-name">Shape fit</div>
+        <div class="dim-verdict" style="color: var(--verdict-strong)">strong</div>
+      </div>
+    </div>
+
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>1. Decision-readiness</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>El PRD se lee como un documento que toma decisiones, no que las difiere a "consideraciones". El mercado está decidido ("Mercado inicial — fútbol, clubes de LALIGA (España). Decidido.", §2.2) y eso fija jurisdicción GDPR (§16). El desacople cobro↔piloto es una decisión declarada como cambio de alcance, no escondida (FR-11). Los trade-offs se nombran con lo que se sacrifica: §15 reconoce que el modelo "por valor" crea presión a sobre-atribuir del lado del vendedor; R-9 admite que el TTFV en minutos choca con integrar el stack enterprise. Las Preguntas Abiertas (§8) son genuinamente abiertas y se distinguen de las ya decididas.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Beachhead aún pendiente</h3>
+              <span class="finding-location">§2.2</span>
+            </header>
+            <div class="finding-note">La recomendación de empezar por sponsor de ciclo corto es la decisión más consecuente del plan de validación y sigue como [DECISIÓN PENDIENTE — Seba]. Conviene cerrarlo antes de épicas porque cambia qué se construye/prueba primero.</div>
+            <div class="finding-fix"><strong>Fix:</strong> convertir en P-6 o anexarlo a P-1 con fecha.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>2. Substance over theater</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Nada se lee como mobiliario. Las personas son tres, todas con protagonista nombrado, y cada una maneja una decisión del PRD: Laura (CMO ciclo corto) ancla la trazabilidad dura de Nivel 1; Marco (director comercial) ancla FR-9 y el flujo de disputa; Seba (consultor) ancla la vista multi-cliente. La innovación no se reclama vacía: §13 Why Now y §12 Foso admiten que el foso "hoy está ausente" y lo plantean como activo a construir. Los NFR tienen umbrales específicos (TTFV &lt; 10 min, cero carga de datos al CMO en SM-C2, PII confinada al clean room). La Visión (§1) es específica de esta categoría.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">none</span>
+              <h3 class="finding-title">Sin hallazgos materiales</h3>
+              <span class="finding-location">—</span>
+            </header>
+            <div class="finding-note">La rúbrica no registró hallazgos materiales en esta dimensión.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>3. Strategic coherence</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Hay una tesis explícita y el PRD apuesta por ella: el patrocinio pasa de visibilidad a "eficiencia y efectividad demostrable", y la pieza que falta es ensamblar la captura de datos con su explotación y una metodología de atribución que un CFO escéptico acepte (§1). Las features sirven ese arco: el subsistema más sensible declarado es la Metodología de atribución (§4.6). La priorización sigue de la tesis (beachhead de ciclo corto porque "el valor es indiscutible"). Las Success Metrics validan la tesis (SM-1 mide adopción para aprendizaje, no DAU/MAU; SM-3 mide valor certificado y auditado) y las counter-metrics son duras (SM-C1 sobre-atribución, SM-C2 carga sobre CMO = cero).</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">SM-1 mezcla métrica de aprendizaje con meta de conversión</h3>
+              <span class="finding-location">§7</span>
+            </header>
+            <div class="finding-note">"4 clubes probando" más "≥1 club que comprometa datos reales" son dos cosas; el doble objetivo dentro de una sola SM puede confundir downstream.</div>
+            <div class="finding-fix"><strong>Fix:</strong> desdoblar en SM-1a (uso/aprendizaje) y SM-1b (conversión a piloto profundo).</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details open>
+        <summary>
+          <h2>4. Done-ness clarity</h2>
+          <span class="verdict-pill verdict-adequate">adequate</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Esta es la dimensión que más cargará la creación de historias, y el PRD es desigual aquí: la mayoría de FR tiene una "Consecuencia (testable)" con condición verificable (FR-2, FR-10, FR-12 son buenos ejemplos). Pero hay adjetivos no acotados en consecuencias clave: FR-5 dice "≥1 variante lista para revisión en minutos" sin bound; el "nº de pasos acotado (objetivo: pocos)" de FR-14 delega a SM-5, que tampoco fija el máximo de pasos. Por eso la dimensión es adequate y no strong: criterios testables que quedan sin valor concreto.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">"Minutos" sin bound en generación</h3>
+              <span class="finding-location">FR-5, §17 "Tiempo de generación"</span>
+            </header>
+            <div class="finding-note">Es un criterio de done no testable; un ingeniero no sabe si 9 min cumple.</div>
+            <div class="finding-fix"><strong>Fix:</strong> fijar umbral numérico (p. ej. ≤ N min) o referenciar un NFR con número, como hace FR-14 con SM-5.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">"Máximo acotado" de pasos sin número</h3>
+              <span class="finding-location">FR-14, SM-5</span>
+            </header>
+            <div class="finding-note">El segundo criterio de SM-5 (nº de pasos) no tiene valor concreto, así que no es verificable.</div>
+            <div class="finding-fix"><strong>Fix:</strong> fijar máximo de pasos hasta primer valor (p. ej. ≤ 3 pasos).</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">FR-1 estado "conectada/error" no cubre estados intermedios</h3>
+              <span class="finding-location">FR-1</span>
+            </header>
+            <div class="finding-note">Menor, pero la enumeración cerrada (parcial, autenticando) puede quedar corta.</div>
+            <div class="finding-fix"><strong>Fix:</strong> permitir estado "en progreso" o aclarar que es binario a propósito.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>5. Scope honesty</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Las omisiones son explícitas y trabajan. §5 No-Goals desambigua riesgos reales ("No es un SaaS por suscripción", "No reclama atribución causal econométrica perfecta en v1", "No transfiere PII cruda del fan a la Marca"). §6.2 marca cada exclusión con razón y horizonte. El de-scoping del cobro se propone honestamente como cambio declarado. Los [ASSUMPTION] hacen roundtrip al Índice (§9). Las precondiciones P-1..P-5 son el mejor mecanismo del documento: cada gate tiene dueño y resuelve un hallazgo nombrado. La alta densidad de pendientes es coherencia, no bloqueo: el PRD no se presenta como green-light-to-build y §10 prohíbe avanzar sin cerrar gates.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">§11 Go-to-Market es todo [DECISIÓN PENDIENTE]</h3>
+              <span class="finding-location">§11</span>
+            </header>
+            <div class="finding-note">Honesto (no se inventan números), pero P-5 depende de esta sección y queda como esqueleto. No es deshonestidad de alcance; es trabajo sin hacer correctamente señalado.</div>
+            <div class="finding-fix"><strong>Fix:</strong> poblar antes de comprometer SM-1, como ya exige P-5.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>6. Downstream usability</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Como chain-top, esta dimensión pesa, y el PRD la sirve bien. Glosario presente (§3) y los sustantivos de dominio se usan idénticos en FR/UJ/SM. IDs contiguos, únicos y resolubles: FR-1..FR-14 sin huecos; SM-1..SM-5 + SM-C1/C2; UJ-1..UJ-3; P-1..P-5; R-1..R-9. Las cross-refs resuelven (§17 TTFV ↔ §14 ↔ R-9 ↔ FR-14 ↔ SM-5 forman una cadena trazable). Cada feature declara qué UJ realiza, dando trazabilidad feature→journey lista para extraer. UJs con protagonista nombrado que carga contexto inline.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">Hallazgos H-1..H-16 referenciados sin índice local</h3>
+              <span class="finding-location">varias secciones</span>
+            </header>
+            <div class="finding-note">El PRD cita "resuelve H-2", "H-15", etc., pero esos IDs viven en el review adversarial externo, no en el PRD. Un downstream que solo lea este doc no puede resolverlos.</div>
+            <div class="finding-fix"><strong>Fix:</strong> nota al pie indicando que H-* refiere al review gate, o tabla breve de mapeo. (Mecánico; no afecta la utilidad de los FR.)</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="dimension">
+      <details>
+        <summary>
+          <h2>7. Shape fit</h2>
+          <span class="verdict-pill verdict-strong">strong</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>El shape matchea el producto. Es un B2B multi-stakeholder con UX significativa (CMO de la Marca + director de la Propiedad + consultor), y por eso los UJs con protagonista son load-bearing — y están. No está sobre-formalizado ni sub-formalizado. La capa regulatoria se trata con la seriedad que el shape exige: la trazabilidad de la restricción GDPR es explícita (§16 + §17 + P-4 como gate). La naturaleza chain-top está reconocida y servida (downstream usability fuerte, gates antes de arquitectura/épicas en §10). El producto es greenfield, así que no aplica la verificación brownfield.</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">none</span>
+              <h3 class="finding-title">Sin hallazgos</h3>
+              <span class="finding-location">—</span>
+            </header>
+            <div class="finding-note">La rúbrica no registró hallazgos en esta dimensión.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <section class="reviewer-section">
+      <details>
+        <summary>
+          <h2>Revisión adversarial</h2>
+          <span class="reviewer-source">review-adversarial-general.md</span>
+        </summary>
+        <div class="dim-body">
+          <div class="dim-judgment">
+            <p>Postura adversarial: no valida de oficio; una "mitigación" que solo mueve el problema a una precondición sin resolverlo NO cuenta como resuelta. Veredicto: la v2.1 hizo un trabajo cosmético honesto —nombró los riesgos, los etiquetó y los empujó a §10/§12— pero nombrar un riesgo no es mitigarlo. La mayoría de los críticos previos siguen abiertos, ahora con etiqueta de "precondición". Peor: la decisión de mercado (LaLiga, sponsors de ciclo largo) agrava el problema central de cobrabilidad, y la nueva restricción TTFV &lt;10 min introduce una contradicción interna dura con la propia tesis de valor. El PRD es más honesto que la v2, pero no más viable: describe un negocio cuyas dos premisas fundacionales —cobrar por valor atribuible y entregar valor en 10 minutos— están sin probar y, en parte, en tensión mutua. Recuento de críticos previos: 0 resueltos de verdad, 1 mitigado en diseño (H-2), 2 parciales/declarativos (H-1, H-7), 1 abierto en su núcleo (H-5).</p>
+          </div>
+        </div>
+        <div class="findings-list">
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-critical">critical</span>
+              <h3 class="finding-title">H-NUEVO-1 — El beachhead recomendado (apuestas/iGaming en LaLiga) está prohibido o severamente restringido en España</h3>
+              <span class="finding-location">§2.2, §4.6 Nivel 1, §6.1 Fase 1</span>
+            </header>
+            <div class="finding-note">El PRD recomienda probar primero con un sponsor de ciclo corto "apuestas/iGaming o e-commerce de un club LaLiga" por su trazabilidad dura. Pero el Real Decreto 958/2020 de comunicación comercial de actividades de juego prohíbe desde 2021 el patrocinio de equipos de fútbol por casas de apuestas y restringe drásticamente su publicidad en España. El segmento "más cobrable" del PRD es, en su mercado elegido, el menos viable legalmente. e-commerce sigue siendo opción, pero el documento ancla el ejemplo en apuestas repetidamente.</div>
+            <div class="finding-fix"><strong>Fix:</strong> eliminar apuestas/iGaming del beachhead recomendado para España; reanclar el ejemplo de ciclo corto en e-commerce/consumo/retail con conversión trazable; verificar con asesoría legal qué verticales de ciclo corto son patrocinadores activos y legales de clubes LaLiga hoy.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-critical">critical</span>
+              <h3 class="finding-title">Contradicción TTFV &lt;10 min ↔ valor real requiere datos del fan (semanas + GDPR)</h3>
+              <span class="finding-location">FR-14 / §4.8 / NFR TTFV, R-9</span>
+            </header>
+            <div class="finding-note">La contradicción interna más grave de la v2.1. Si la oportunidad de los primeros 10 min se genera con datos de muestra/semilla (no los datos reales del fan), no es una oportunidad real ni atribuible: es el demo de Fase 0 disfrazado de "primer valor" y rompe la promesa, porque el valor diferencial ES la especificidad de los datos del fan. Si en cambio se generara con datos reales en &lt;10 min, sería incompatible con el resto del PRD, que exige P-4 (madurez), base legal GDPR, diseño de clean room y consentimiento que no se extiende a la Marca. No puedes tener "datos reales del fan en 10 minutos" y "el acceso a datos del fan es un gate legal de Fase 1" a la vez. El "&lt;10 min" se vende como argumento de entrada (SM-5): es marketing de onboarding, no entrega de valor — reabre R-6 por la puerta de atrás.</div>
+            <div class="finding-fix"><strong>Fix:</strong> reescribir FR-14 / TTFV: decidir si la ruta ligera entrega valor real (imposible en 10 min sin datos) o es onboarding/demo — y dejar de venderla como "primer valor". No prometer valor diferencial sobre datos de muestra.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-critical">critical</span>
+              <h3 class="finding-title">H-5 — Círculo vicioso de atribución cobrable sigue ABIERTO para el grueso del mercado</h3>
+              <span class="finding-location">§4.6 Nivel 2, P-2, §6.2</span>
+            </header>
+            <div class="finding-note">La v2.1 no rompe el círculo, lo segmenta. Nivel 1 es genuinamente cobrable pero solo aplica a ciclo corto (cupón/UTM/QR), minoría de los sponsors de LaLiga y segmento con problema regulatorio. Nivel 2 (la mayoría del dinero de LaLiga: aerolíneas, banca, autos, telco) sigue exactamente en el círculo: "cobrable después de que un CFO valide el estándar (P-2)", y la incrementalidad real que lo haría defendible está fuera del MVP (v2). El MVP no puede cobrar al grueso del mercado que eligió. La elección de LaLiga no resuelve H-5; lo empeora, porque alinea el mercado primario con el nivel no cobrable.</div>
+            <div class="finding-fix"><strong>Fix:</strong> resolver H-5 para Nivel 2 o aceptar formalmente que v1 solo cobra Nivel 1 — y entonces verificar que existe un comprador Nivel 1 legal en LaLiga (no apuestas).</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-critical">critical</span>
+              <h3 class="finding-title">H-1 — Cobro sin contrato ni marco legal: P-1 es una precondición vacía</h3>
+              <span class="finding-location">P-1, FR-11</span>
+            </header>
+            <div class="finding-note">P-1 lista las preguntas difíciles (qué es valor, quién audita, qué pasa en disputa) y las pospone: no hay borrador de cláusulas, ni estructura de reparto, ni árbitro nombrado. Mover "no tenemos contrato" a "precondición: tener contrato" no resuelve nada. Además FR-11 desacopla el cobro del piloto, lo que reduce el riesgo en Fase 1, pero significa que el modelo de negocio nunca se prueba en el piloto: el piloto valida la herramienta, no el negocio. Sigue abierto en sustancia.</div>
+            <div class="finding-fix"><strong>Fix:</strong> dotar a P-1 de borrador de cláusulas, estructura de reparto y mecanismo de árbitro antes de comprometer el modelo de cobro.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-critical">critical</span>
+              <h3 class="finding-title">H-7 — Dependencia de datos + derechos de la Propiedad; clean room sobrecargado</h3>
+              <span class="finding-location">P-4, §16, glosario, FR-2</span>
+            </header>
+            <div class="finding-note">P-4 es la respuesta correcta en estructura, pero: (a) depende de que clubes concretos de LaLiga tengan madurez de datos suficiente — no demostrado; (b) el clean room se invoca como bala de plata legal repetidamente sin diseño técnico ni dictamen legal; (c) §16 admite que el consentimiento del fan al club no se extiende a la Marca bajo GDPR — el clean room mitiga pero no necesariamente resuelve (activar sobre segmentos modelados también es tratamiento de datos). Abierto; el clean room está sobrecargado como solución mágica.</div>
+            <div class="finding-fix"><strong>Fix:</strong> P-4 debe exigir dictamen legal específico sobre si la activación vía clean room constituye base legal suficiente, no asumirlo.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">H-NUEVO-2 — La métrica primaria (SM-1) ya no mide negocio, y nada lo sustituye</h3>
+              <span class="finding-location">§7 SM-1</span>
+            </header>
+            <div class="finding-note">SM-1 se redefinió a "4 clubes probando + feedback, aunque no haya venta cerrada": métrica de actividad/aprendizaje. Ninguna métrica del PRD prueba que el modelo de negocio (precio por valor) funciona: el cobro está desacoplado (FR-11), Nivel 2 no es cobrable (P-2), SM-3 cuenta eventos certificados "sin cobro", SM-4 es "≥1 caso" aspiracional. El PRD puede "tener éxito" en todas sus métricas y aun así no haber demostrado que alguien paga. El éxito definido es ortogonal a la viabilidad comercial.</div>
+            <div class="finding-fix"><strong>Fix:</strong> añadir una métrica de validación comercial real (p. ej. ≥1 cliente que firme un term sheet con disposición a pagar sobre Nivel 1 verificado, o un test de precio con CFO), separada de la adopción para aprendizaje.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">H-NUEVO-3 — El piloto valida la herramienta pero deja el negocio sin probar</h3>
+              <span class="finding-location">§6.1 Fase 1, FR-11</span>
+            </header>
+            <div class="finding-note">Al desacoplar el cobro del piloto (mitigación legítima de H-1/H-2), la Fase 1 prueba que la herramienta genera oportunidades y certifica valor, pero no prueba la única hipótesis que mata el negocio si es falsa: que un cliente pague por ese valor certificado. Se difiere el momento de la verdad a "una fase posterior tras auditoría" — fase que no está planificada ni datada. Riesgo de construir todo el aparato y descubrir la inviabilidad comercial al final.</div>
+            <div class="finding-fix"><strong>Fix:</strong> definir una Fase 1.5 / criterio de salida que ponga a prueba la disposición a pagar (cobro simbólico o compromiso contractual de pago condicionado) antes de escalar.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">H-4 — Ciclo de venta largo AGRAVADO por la decisión de mercado</h3>
+              <span class="finding-location">R-4, §2.2</span>
+            </header>
+            <div class="finding-note">Elegir LaLiga con sponsors de ciclo largo (aerolíneas, banca, autos, telco) hace que la venta, la firma de metodología y la materialización del valor sean TODAS lentas. La "mitigación" (beachhead de ciclo corto) no está decidida y choca con la restricción regulatoria de apuestas (ver H-NUEVO-1). Abierto y, en parte, internamente contradictorio.</div>
+            <div class="finding-fix"><strong>Fix:</strong> decidir el beachhead con un vertical de ciclo corto legal y cobrable en LaLiga; cuantificar el ciclo de venta esperado por vertical.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">H-12 — Sin foso defensivo; foso negativo</h3>
+              <span class="finding-location">§12, R-8</span>
+            </header>
+            <div class="finding-note">§12 lista 4 fosos candidatos y cierra con [DECISIÓN PENDIENTE — Seba: elegir foso]. Listar fosos posibles no es tener uno. R-8 admite que incumbentes con distribución (Salesforce/Adobe) o holdings (WPP/Publicis) pueden copiarlo, y que el producto se monta sobre el stack de esos mismos incumbentes, dándoles visibilidad directa de la oportunidad. No es un foso ausente: es un foso negativo. Abierto y subestimado.</div>
+            <div class="finding-fix"><strong>Fix:</strong> elegir el foso de §12 y especificar cómo se evita exponer la jugada a los incumbentes sobre cuyo stack se monta.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-high">high</span>
+              <h3 class="finding-title">H-11 — Agencia con poder de bloqueo del self-serve; contradicción autonomía↔agencia</h3>
+              <span class="finding-location">§2.1, §4.4, R-7</span>
+            </header>
+            <div class="finding-note">Reconocer que la agencia controla cuentas y canales es correcto, pero la "mitigación" es "validar con CMOs reales y mapear control de accesos en el piloto" — otra vez posponer. El JTBD del CMO (§2.1) es activar rápido "sin depender del ciclo lento con la agencia", mientras §4.4 ahora dice que la agencia puede operar el canal. El producto promete autonomía y a la vez admite que la agencia controla el grifo. Contradicción no resuelta.</div>
+            <div class="finding-fix"><strong>Fix:</strong> decidir el modelo: autonomía real (con acceso a canales que no pasen por la agencia) o reposicionar el beneficio del CMO de "autonomía" a "velocidad/calidad de la propuesta a la agencia". No ambos.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">H-NUEVO-4 — El clean room se invoca como solución legal universal sin diseño ni dictamen</h3>
+              <span class="finding-location">glosario, FR-2, §16, R-3</span>
+            </header>
+            <div class="finding-note">"Clean room" aparece como respuesta a base legal, consentimiento, residencia, retención y a "no transferir PII a la Marca". Activar sobre segmentos modelados sigue siendo tratamiento de datos bajo GDPR y requiere base legal propia; el clean room reduce exposición de PII pero no crea por sí solo la base de legitimación. Se carga un patrón técnico con una conclusión jurídica no validada.</div>
+            <div class="finding-fix"><strong>Fix:</strong> bajar el tono de las afirmaciones del glosario/§16 de "mitiga/resuelve" a "diseño a validar legalmente"; exigir dictamen en P-4.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">H-NUEVO-5 — Acumulación de [DECISIÓN PENDIENTE] críticas: el PRD no es accionable como gate</h3>
+              <span class="finding-location">transversal: §2.2, FR-11, §11, §12, P-1..P-5</span>
+            </header>
+            <div class="finding-note">Las decisiones que determinan viabilidad —beachhead, desacople de cobro, GTM completo, foso, reparto de valor, estándar de evidencia— están TODAS pendientes. Un PRD que pasa el gate de revisión con sus cinco palancas de viabilidad sin decidir es un brief de decisiones pendientes. Riesgo de que UX/arquitectura arranquen sobre fundaciones que aún pueden cambiar de raíz.</div>
+            <div class="finding-fix"><strong>Fix:</strong> marcar que NINGÚN workflow posterior arranca hasta cerrar P-1, P-2, P-4 y el beachhead, como condición dura que bloquea el avance.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-medium">medium</span>
+              <h3 class="finding-title">H-9 / H-6 / H-8 — Mitigaciones que son la propia precondición (GTM vacío, CFO, base legal)</h3>
+              <span class="finding-location">§11, P-2, P-4</span>
+            </header>
+            <div class="finding-note">§11 GTM es un formulario en blanco ([DECISIÓN PENDIENTE — Seba]); SM-1 pide "4 clubes probando" sin una sola Propiedad nombrada. H-6 ("atribución suficiente" no resiste a un CFO escéptico) y H-8 (base legal GDPR) están movidos a P-2/P-4 sin dictamen: la solución es la precondición. Honesto al admitirlo, no resuelto.</div>
+            <div class="finding-fix"><strong>Fix:</strong> llenar §11 con Propiedades y contactos reales, o bajar SM-1 a hipótesis no comprometida; cerrar P-2 con un CFO real y P-4 con dictamen legal antes de cobrar.</div>
+          </article>
+          <article class="finding">
+            <header>
+              <span class="badge badge-sev-low">low</span>
+              <h3 class="finding-title">H-NUEVO-6 — Contradicción de framing CMO vs. agencia sin reconciliar</h3>
+              <span class="finding-location">§2.1 vs. §4.4 / R-7</span>
+            </header>
+            <div class="finding-note">La v2.1 introdujo la nota de §4.4 sin reconciliarla con el JTBD que la contradice. El valor prometido al CMO (autonomía) y la realidad admitida (agencia controla el canal) coexisten sin resolución.</div>
+            <div class="finding-fix"><strong>Fix:</strong> decidir y declarar el modelo (autonomía real o velocidad/calidad de la propuesta a la agencia), no ambos.</div>
+          </article>
+        </div>
+      </details>
+    </section>
+
+    <div class="mechanical">
+      <h3>Notas mecánicas</h3>
+      <ul>
+        <li><strong>Glossary drift:</strong> no material. "Entidad deportiva" se usa como alias declarado de "Propiedad" (Glosario lo autoriza). Leve desincronía: "Valor medible (v1)" en Glosario define solo Nivel 1, mientras §4.6 lo expande a dos niveles. Fix menor: actualizar la entrada del Glosario para referenciar los dos niveles.</li>
+        <li><strong>Continuidad de IDs:</strong> FR-1..FR-14 contiguos; SM, UJ, P, R sin huecos ni duplicados. OK.</li>
+        <li><strong>Roundtrip de supuestos:</strong> los [ASSUMPTION] inline aparecen en el Índice (§9) y viceversa; varios se elevan a precondiciones (P-1, P-2, P-4). OK.</li>
+        <li><strong>Naming de protagonistas en UJ:</strong> los tres UJ tienen protagonista nombrado con contexto inline. OK.</li>
+        <li><strong>Secciones requeridas:</strong> presentes y excedidas para el stake (Visión, Usuario/JTBD, Glosario, Features/FR, No-Goals, Alcance MVP, SM + counter-metrics, Open Questions, Índice de supuestos, Precondiciones, GTM, Riesgos/competencia/foso, Why Now, Dependencias, Monetización, Gobernanza, NFRs).</li>
+        <li><strong>Referencias H-*:</strong> apuntan a artefacto externo (review gate); ver hallazgo de §6 Downstream usability.</li>
+      </ul>
+    </div>
+
+    <footer class="report-footer">
+      <div class="meta">
+        <span>Rúbrica: .claude/skills/bmad-prd/assets/prd-validation-checklist.md</span>
+        <span>Generado: 2026-06-27T00:00:00Z</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
