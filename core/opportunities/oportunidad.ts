@@ -21,6 +21,27 @@ export type MetricaNegocio =
   | 'afinidad'
   | 'engagement';
 
+/** Nivel de confianza del estimado de valor potencial. */
+export type Confianza = 'alta' | 'media' | 'baja';
+
+/**
+ * Valor potencial estimado de una Oportunidad (FR-4). El método es transparente
+ * y versionado (resuelve H-16): cada estimado expone qué métrica, qué supuesto y
+ * qué confianza, y qué versión del método lo produjo.
+ */
+export interface ValorPotencial {
+  /** Puntuación 0–100 comparable entre oportunidades. */
+  estimado: number;
+  /** Métrica de negocio sobre la que se estima. */
+  metrica: MetricaNegocio;
+  /** Supuesto explícito detrás del estimado. */
+  supuesto: string;
+  /** Confianza en el estimado. */
+  confianza: Confianza;
+  /** Versión del método de estimación (auditable). */
+  metodoVersion: string;
+}
+
 export interface Oportunidad {
   id: string;
   propiedadId: PropiedadId;
@@ -36,4 +57,11 @@ export interface Oportunidad {
   hipotesisValor: string;
   /** Métrica de negocio que se busca mover. */
   metricaNegocio: MetricaNegocio;
+  /** Valor potencial estimado (lo asigna la priorización — Historia 1.4). */
+  valorPotencial?: ValorPotencial;
+}
+
+/** Oportunidad ya priorizada: el valor potencial está garantizado. */
+export interface OportunidadPriorizada extends Oportunidad {
+  valorPotencial: ValorPotencial;
 }
