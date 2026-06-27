@@ -3,7 +3,7 @@ title: "Copiloto de Patrocinio Deportivo"
 status: final
 created: 2026-06-27
 updated: 2026-06-27
-revision: v2.2 (post re-gate: beachhead legal, TTFV genuino, señal de pago)
+revision: v2.4 (datos del hincha: intención, consumo, opinión, narrativa)
 source_brief: ../../briefs/brief-MetodoBMAD-2026-06-27/brief.md
 source_intent: ../../../brainstorming/brainstorm-patrocinio-valor-datos-ia-2026-06-27/brainstorm-intent.md
 ---
@@ -11,7 +11,7 @@ source_intent: ../../../brainstorming/brainstorm-patrocinio-valor-datos-ia-2026-
 # PRD: Copiloto de Patrocinio Deportivo
 *Título de trabajo — confirmar.*
 
-> **Nota de revisión (status: final, v2.2):** este PRD pasó **dos rondas de reviewer gate** (rúbrica + adversarial). La rúbrica de calidad lo califica **Good**. Los riesgos críticos de negocio se elevaron de "supuestos" a **Precondiciones de Fase 1** (§10) y a un registro de **Riesgos** (§12). Tras el re-gate se corrigió el beachhead (apuestas → e-commerce/delivery/consumo/fintech, por RD 958/2020), se definió el primer valor genuino sin first-party (§4.8) y se añadió la señal de pago (SM-6). **Riesgos residuales aceptados para avanzar a Fase 3:** atribución cobrable del ciclo largo (gestionada en P-2) y defensibilidad/foso (a construir, §12). Las decisiones aún tuyas están marcadas `[DECISIÓN PENDIENTE — Seba]`.
+> **Nota de revisión (status: final, v2.4):** este PRD pasó **dos rondas de reviewer gate** (rúbrica + adversarial). La rúbrica de calidad lo califica **Good**. Los riesgos críticos de negocio se elevaron de "supuestos" a **Precondiciones de Fase 1** (§10) y a un registro de **Riesgos** (§12). Tras el re-gate se corrigió el beachhead (apuestas → e-commerce/delivery/consumo/fintech, por RD 958/2020), se definió el primer valor genuino sin first-party (§4.8) y se añadió la señal de pago (SM-6). **Riesgos residuales aceptados para avanzar a Fase 3:** atribución cobrable del ciclo largo (gestionada en P-2) y defensibilidad/foso (a construir, §12). Las decisiones aún tuyas están marcadas `[DECISIÓN PENDIENTE — Seba]`.
 
 ## 0. Propósito del documento
 
@@ -76,7 +76,8 @@ El Copiloto es esa pieza: una **capa de inteligencia y orquestación** —web ap
 - **Marca patrocinadora** — empresa que patrocina a la Propiedad; su CMO es el usuario final.
 - **CMO** — responsable de marketing de la Marca; usuario principal.
 - **Consultor** — tercero que construye/provee el Copiloto y opera el servicio vía la consultora.
-- **Datos del fan (first-party)** — datos de audiencia propiedad de la Propiedad; base de la precisión.
+- **Datos del fan (first-party)** — datos de audiencia con PII propiedad de la Propiedad; base de la precisión; requieren clean room + base legal GDPR.
+- **Datos públicos del hincha** — señales públicas y agregadas de la afición, sin PII: sociodemografía, intereses y afinidades de marca, **y señales de intención y narrativa** (qué busca, qué consume, qué opina/sentimiento, su narrativa social pública). Usables para el primer valor sin clean room, manteniéndolas agregadas/anonimizadas.
 - **Clean room** — entorno donde se activa sobre segmentos/audiencias modeladas **sin transferir PII cruda** del fan a la Marca.
 - **Oportunidad de activación** — acción de marketing basada en datos del fan que explota los derechos del patrocinio para generar valor de negocio.
 - **Activación** — la pieza ejecutada (creatividad/contenido) de una Oportunidad.
@@ -104,7 +105,7 @@ El sistema sirve segmentos modelados al motor de oportunidades sin exponer PII a
 **Descripción:** identifica y prioriza Oportunidades a partir de los Datos del fan y los derechos. Realiza UJ-1, UJ-3.
 
 #### FR-3: Identificar oportunidades
-El sistema identifica Oportunidades basadas en Datos del fan.
+El sistema identifica Oportunidades basadas en los Datos públicos del hincha (intención, consumo, opinión, narrativa) y, cuando esté disponible, los Datos del fan first-party.
 **Consecuencias (testables):** cada Oportunidad incluye segmento objetivo, derecho usado e hipótesis de valor con la **métrica de negocio** que se busca mover (definida según §4.6).
 
 #### FR-4: Priorizar oportunidades por valor potencial
@@ -172,13 +173,17 @@ El Consultor/Entidad puede integrar el Copiloto con ≥1 plataforma del stack (S
 ### 4.8 Primer valor inmediato (onboarding en minutos)
 **Descripción:** en el primer uso, el usuario obtiene valor en **< 10 minutos y ≤ 3 pasos**, sin esperar a la integración profunda del stack.
 
-**Qué es el "primer valor" GENUINO sin first-party (resuelve la incoherencia del gate):** el valor inicial NO usa datos del fan (que tardan semanas + dictamen GDPR). Se construye sobre **datos públicos/agregados del club y de su audiencia** (perfil del club, calendario deportivo, audiencia pública, benchmarks de patrocinio, contexto de la marca dado en el brief): un **mapa de oportunidades de activación priorizado + un concepto de activación generado con IA**. Es valor real y accionable —un punto de partida creíble—, no un demo vacío; la **precisión se profundiza** cuando entra el first-party vía clean room (FR-1/FR-2). Realiza UJ-1.
+**Qué es el "primer valor" GENUINO sin first-party (resuelve la incoherencia del gate):** el valor inicial NO usa el first-party PII del fan (que tarda semanas + dictamen GDPR). Se construye sobre dos fuentes públicas:
+1. **Datos públicos del club:** perfil, calendario deportivo, audiencia pública, benchmarks de patrocinio, contexto de la marca dado en el brief.
+2. **Datos públicos del hincha (clave para la marca):** sociodemografía, intereses y afinidades de marca, **más señales de intención y narrativa** — qué **busca** el hincha (intención), qué **consume** (comportamiento y canal), qué **opina** (sentimiento) y su **narrativa social** pública. Agregados/anonimizados. Estas señales mapean a la estrella polar: búsqueda → *momento* correcto, consumo → *forma/canal* correcto, opinión/narrativa → *mensaje* correcto. Es justo lo que la marca quiere para sus objetivos.
+
+Con eso el sistema entrega un **mapa de oportunidades de activación priorizado + un concepto de activación generado con IA** que ya habla **del hincha**, no solo del club. Es valor real y accionable —no un demo vacío—; la **precisión se profundiza** cuando entra el first-party vía clean room (FR-1/FR-2). Realiza UJ-1.
 
 #### FR-14: Valor en el primer uso sin integración profunda
 El CMO obtiene al menos una Oportunidad accionable y un concepto de Activación en su **primer uso**, en < 10 min y ≤ 3 pasos, basados en datos públicos/agregados, sin completar la integración del stack.
 **Consecuencias (testables):**
 - En la primera sesión (< 10 min, ≤ 3 pasos), el sistema entrega ≥1 Oportunidad + una previsualización de Activación.
-- El primer valor se computa sobre datos públicos/agregados del club (no first-party del fan) y no exige conectar Salesforce/Adobe ni el clean room.
+- El primer valor se computa sobre datos públicos/agregados del **club y del hincha** (no first-party PII del fan) y no exige conectar Salesforce/Adobe ni el clean room.
 - La integración profunda puede completarse después y **eleva la precisión** sin haber bloqueado el primer valor.
 
 ## 5. No-Goals (explícitos)
@@ -295,7 +300,12 @@ Demanda (CFOs exigiendo prueba) y capacidad (IA, LLMs, datos) acaban de coincidi
 
 ## 16. Gobernanza de datos
 
-Los Datos del fan son first-party de la Propiedad. **Régimen aplicable: GDPR (España/UE).** El consentimiento del fan a su club **no se extiende automáticamente** al uso por la Marca (un punto sensible bajo GDPR). El diseño opera vía **clean room** (activar sobre segmentos modelados sin exponer PII a la Marca) para mitigar base legal, consentimiento, residencia y retención. Dictamen legal GDPR es **gate de Fase 1** (P-4). La promesa "cero carga al CMO" no elimina la carga de cumplimiento: la asume la Propiedad/Consultor.
+**Régimen aplicable: GDPR (España/UE).** Dos categorías de dato con tratamiento distinto:
+
+- **First-party PII del fan:** propiedad de la Propiedad; el consentimiento del fan a su club **no se extiende automáticamente** al uso por la Marca. Opera vía **clean room** (segmentos modelados sin exponer PII a la Marca). Dictamen legal GDPR es **gate de Fase 1** (P-4).
+- **Datos públicos del hincha:** usables para el primer valor sin clean room, pero **manteniéndolos agregados/anonimizados** — bajo GDPR el dato personal sigue protegido aunque sea público, así que el primer valor no debe perfilar individuos, solo la afición en agregado.
+
+La promesa "cero carga al CMO" no elimina la carga de cumplimiento: la asume la Propiedad/Consultor.
 
 ## 17. NFRs transversales
 

@@ -2,6 +2,8 @@
 
 Proyecto MetodoBMAD · 2026-06-27 · Insumo destilado de la sesión de brainstorming para alimentar bmad-product-brief y bmad-prd.
 
+> **Nota — registro histórico (Fase 1).** Este documento captura la génesis de la idea tal como salió del brainstorming y se conserva sin reescribir como parte de la trazabilidad. La **verdad vigente del producto** evolucionó después y vive en el **Product Brief** y, con todo el detalle, en el **PRD v2.4** (`../../planning-artifacts/prds/prd-MetodoBMAD-2026-06-27/prd.md`). Cambios posteriores clave: mercado = LaLiga (España); ICP de ambos ciclos con beachhead de ciclo corto legal; valor medible en dos niveles; TTFV < 10 min; datos públicos del hincha (intención, consumo, opinión, narrativa); clean room + GDPR; cobro por valor desacoplado del piloto.
+
 ---
 
 ## Problema raíz (Five Whys)

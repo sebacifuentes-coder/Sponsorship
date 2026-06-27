@@ -3,85 +3,79 @@ title: "Product Brief — Copiloto de Patrocinio Deportivo"
 status: ready
 created: 2026-06-27
 updated: 2026-06-27
+aligned_with: "PRD v2.4 (../../prds/prd-MetodoBMAD-2026-06-27/prd.md)"
 source: ../../../brainstorming/brainstorm-patrocinio-valor-datos-ia-2026-06-27/brainstorm-intent.md
 ---
 
 # Product Brief: Copiloto de Patrocinio Deportivo
 
-> Nombre de trabajo. El nombre comercial está por definir. **[SUPUESTO]**
+> Nombre de trabajo; el comercial está por definir. **Este brief es el resumen ejecutivo; el detalle accionable y los requisitos viven en el PRD v2.4.** Se mantiene alineado con él.
 
 ## Resumen ejecutivo
 
-El patrocinio deportivo está cambiando de eje: de **visibilidad** a **eficiencia y efectividad demostrable**. Hoy los CFOs exigen a los CMOs probar —con datos— cómo la inversión en patrocinio impacta el crecimiento del negocio, y la IA generativa por fin lo hace posible. Pero el mercado no ha ensamblado la pieza que falta: el puente entre la **captura de datos** y su **explotación inteligente**.
+El patrocinio deportivo está cambiando de eje: de **visibilidad** a **eficiencia y efectividad demostrable**. Los CFOs exigen a los CMOs probar con datos cómo el patrocinio impacta el crecimiento del negocio, y la IA generativa por fin lo hace posible. La pieza que falta no es solo tecnología: es ensamblar la **captura de datos** con su **explotación inteligente**, lograr adopción temprana y construir una **metodología de atribución defendible** ante un CFO escéptico.
 
-Este producto es ese puente: un **copiloto** que ayuda al CMO de la marca patrocinadora a **explotar las oportunidades del patrocinio para maximizar el ROI** —y, como evidencia de ello, a demostrar su impacto en el negocio ante el board. No es un medidor: medir es el soporte, no el corazón. Se entrega como una **capa de inteligencia y orquestación** que se monta sobre el stack martech que entidad y marca ya tienen (Salesforce, Adobe, Azure, Google y sus LLMs), no como un silo nuevo.
+Este producto es ese puente: un **copiloto** que ayuda al CMO de la marca patrocinadora a **explotar las oportunidades del patrocinio para maximizar el ROI** y, como evidencia, a **demostrar su impacto ante el board**. No es un medidor: medir es el soporte. Se entrega como una **capa de inteligencia y orquestación** sobre el stack que entidad y marca ya tienen (Salesforce, Adobe, Azure, Google y sus LLMs), no como un silo nuevo.
 
-El producto lo construye un consultor (tercero) para la **entidad deportiva**, que lo paga y lo disponibiliza a sus marcas patrocinadoras. Para la entidad es la palanca para **renovar patrocinios y mejorar las primas**; para el CMO, la herramienta para **quedar como héroe** demostrando crecimiento real.
+Lo construye un consultor para la **entidad deportiva**, que lo disponibiliza a sus marcas. Para la entidad es la palanca de **renovación y mejores primas**; para el CMO, la herramienta para **quedar como héroe**. Mercado inicial: **fútbol, clubes de LaLiga (España)**.
 
 ## El problema
 
-El CMO no puede demostrar el impacto del patrocinio en el negocio porque falta trazabilidad que conecte la visibilidad con la atribución en ventas. Esa trazabilidad no existe porque medir cómo el branding impacta la venta es intrínsecamente complejo, y hoy se sustituye por equivalencias y proxies montados sobre supuestos (lógica AVE / media value) — justo lo que el CFO ya no acepta. La muleta actual del CMO es, a la vez, su exposición.
+El CMO no puede demostrar el impacto del patrocinio porque falta trazabilidad que conecte la visibilidad con la atribución en ventas. Esa trazabilidad no existe porque medir branding→venta es intrínsecamente complejo, y hoy se sustituye por proxies sobre supuestos (lógica AVE) — justo lo que el CFO ya no acepta. La muleta actual del CMO es, a la vez, su exposición.
 
-Hay un **segundo dolor**, operativo: activar los derechos del patrocinio es **lento**. La marca trabaja con una agencia que desarrolla las creatividades, el cliente aprueba, la agencia implementa. Las idas y vueltas —para identificar oportunidades y para aprobar— hacen perder tiempo y **ventanas de oportunidad**. No es solo *qué* activar, sino *qué tan rápido* se puede activar.
+**Segundo dolor (operativo):** activar los derechos es **lento**. La marca depende de su agencia (crea, el cliente aprueba, la agencia implementa); las idas y vueltas pierden tiempo y ventanas de oportunidad. No es solo *qué* activar, sino *qué tan rápido*.
 
 ## La solución
 
-Un copiloto que, sobre los datos servidos desde la propiedad deportiva (sin pedirle al CMO que recolecte ni cargue nada):
+Un copiloto que, con los datos servidos sin pedirle al CMO que cargue nada:
 
-1. **Identifica oportunidades** de activación del patrocinio conectadas a datos del fan.
-2. **Genera la activación** (creatividad/contenido) con IA generativa y **acelera la aprobación**, comprimiendo el ciclo marca-agencia.
-3. **Habilita la autonomía de implementación del cliente** (activación self-serve): la agencia queda fuera del loop cuando el cliente puede implementar solo.
-4. **Demuestra el impacto** con datos: entrega al CMO la evidencia del crecimiento atribuible al patrocinio para la escena clave —el CMO ante el board.
+1. **Identifica oportunidades** de activación a partir de **datos públicos del hincha** (qué busca, consume, opina y su narrativa social, agregados/anonimizados) y, cuando esté disponible, el first-party del fan vía clean room.
+2. **Genera la activación** con IA y **acelera la aprobación**, comprimiendo el ciclo marca-agencia.
+3. **Habilita la autonomía de implementación** (self-serve): la agencia sale del loop donde el cliente puede implementar solo.
+4. **Demuestra el impacto** con datos para la escena clave: el CMO ante el board.
 
-La estrella polar: el patrocinio permite entregar *el mensaje correcto, en el momento correcto, de la forma correcta, a la persona correcta* — precisión aplicada al patrocinio = crecimiento demostrable.
+Estrella polar: *el mensaje correcto, en el momento correcto, de la forma correcta, a la persona correcta*. Las señales del hincha mapean a ella: búsqueda → momento, consumo → forma/canal, opinión/narrativa → mensaje.
 
 ## Qué lo hace diferente
 
-- **Ataca dos dolores con una sola palanca (IA generativa):** demostrar/maximizar ROI **y** comprimir el ciclo de activación. La competencia actual (activaciones sueltas + visibilidad estilo AVE) solo roza el primero, y mal.
-- **Cero carga de datos al CMO:** la data se sirve desde la propiedad, que tiene los datos del fan *y* los derechos. La restricción operativa se resuelve con la estructura de mercado.
-- **Valor inmediato:** actuar sobre oportunidades entrega valor el día uno, sin esperar a que "madure la medición".
+- **Ataca dos dolores con una palanca (IA generativa):** demostrar/maximizar ROI **y** comprimir el ciclo de activación.
+- **Valor en minutos (TTFV < 10 min):** primer valor genuino sobre datos públicos del club y del hincha, sin esperar a la integración profunda. Es también argumento de venta.
+- **Cero carga de datos al CMO:** la data se sirve desde la propiedad, que tiene datos y derechos.
+- **Incentivos alineados (precio por valor):** no es suscripción SaaS; el cliente paga cuando la herramienta certifica **valor medible**. Argumento difícil de rebatir ante el CFO.
 - **Se monta sobre el stack existente** (orquesta, no reemplaza), bajando la barrera de adopción.
-- **Incentivos alineados (precio por valor):** el cliente **no paga una suscripción SaaS, paga cada vez que la herramienta le reporta valor medible** para su negocio. El producto solo cobra cuando prueba valor — argumento difícil de rebatir ante el CFO.
-- **Ventaja de tiempo (no foso técnico):** demanda (CFO) y capacidad (IA) acaban de coincidir; el foso real es ensamblaje + adopción tempranos. **[SUPUESTO]**
+- **Foso a construir:** metodología de atribución certificada + dato propietario de benchmark cross-propiedad + lock-in de dos lados. (No basta "llegar primero".)
 
 ## A quién sirve
 
-- **Entidad deportiva (cliente que paga y distribuye).** Posee los datos del fan + los derechos. Busca renovaciones y mejores primas. Disponibiliza la herramienta a sus marcas.
-- **Marca / CMO (usuario final, beneficiario).** Busca maximizar el ROI del patrocinio y quedar como héroe ante el board. Su éxito: demostrar con datos el crecimiento atribuible.
-- **Consultor / tercero (quien construye y provee).** Desarrolla la solución y la entrega a la entidad. **Genera ingresos a través de la consultora que lo contrata para la identificación, desarrollo y captura de estas oportunidades** — modelo de servicios de consultoría, donde la plataforma es el habilitador del servicio (no una licencia SaaS por sí sola).
+- **Entidad deportiva / Propiedad (cliente que paga y distribuye).** Posee datos del fan + derechos. Busca renovaciones y mejores primas.
+- **Marca / CMO (usuario final).** Maximiza el ROI y queda como héroe ante el board.
+- **Consultor (construye y provee).** Ingresos vía la consultora que lo contrata por identificación/desarrollo/captura de oportunidades; la plataforma es el habilitador del servicio. El cliente paga por **valor medible certificado**.
 
 ## Criterios de éxito
 
-**Métrica principal (corto plazo):** al menos **4 entidades deportivas quieren adoptarlo en el próximo mes**. Es la validación temprana que define el MVP.
+- **Principal (aprendizaje):** ≥4 clubes de LaLiga **probando el Copiloto y dando feedback**, aunque no haya venta; + ≥1 club que comprometa datos reales para un piloto.
+- **Señal de negocio:** ≥1 cliente firma compromiso de **precio por valor** (sujeto a auditoría).
+- **TTFV:** primer valor en < 10 min y ≤ 3 pasos.
+- Secundarias (a validar): ciclo de activación reducido; nº de eventos de valor certificado; ≥1 renovación/mejora de prima atribuible.
 
-Métricas secundarias a validar más adelante **[SUPUESTO]**:
+## Alcance (resumen; detalle en el PRD)
 
-- **Negocio (entidad):** tasa de renovación de patrocinios y variación de la prima de patrocinio.
-- **Usuario (CMO):** ROI/ROSI del patrocinio demostrado; tiempo del ciclo de activación (de oportunidad a implementación) reducido; nº de activaciones implementadas de forma autónoma.
-- **Producto:** adopción por marcas dentro de cada entidad; data servida sin intervención manual del CMO.
+**Fase 0 — Demo/PoC** con datos de muestra, exponiendo honestamente los pre-requisitos, para abrir puertas. **Fase 1 — Piloto acotado** sobre 1 club LaLiga + 1 marca (idealmente sponsor de ciclo corto **legal** — e-commerce/delivery/consumo/fintech; apuestas quedan fuera por RD 958/2020), para **validar la metodología de atribución sin facturar** (cobro desacoplado, se activa tras auditoría).
 
-## Alcance
+**Fuera (v1):** cobro automático (gated tras auditoría), atribución econométrica avanzada (v2), multi-deporte/multi-liga a escala, marketplace de activaciones, reemplazo total de la agencia.
 
-> Primera versión, tentativa — a refinar en el PRD. **[SUPUESTO]**
+## Valor medible en dos niveles
 
-**Dentro (v1):** ingesta/servido de datos del fan desde la propiedad; identificación de oportunidades de activación; generación de creatividad con IA; panel de evidencia de ROI para el board; integración con al menos una plataforma martech del stack existente.
+Como los sponsors de LaLiga abarcan ambos ciclos de compra: **Nivel 1 — trazabilidad dura** (ciclo corto: cupón/UTM/QR, indiscutible y cobrable) y **Nivel 2 — proxy/incrementalidad acordada** (ciclo largo: lift de marca, búsquedas, leads; requiere validar el estándar de evidencia con un CFO antes de cobrar).
 
-**Fuera (v1):** reemplazo total de la agencia; medición de atribución causal "perfecta"; multi-deporte/multi-liga a escala; marketplace de activaciones.
+## Contexto tecnológico y gobernanza
 
-## Contexto tecnológico
-
-Entidades y marcas ya operan con martech de Salesforce y Adobe, infraestructura de Azure y Google y sus LLMs. El producto es una **capa de inteligencia / orquestación** sobre ese stack; la mecánica de "data servida" y la activación self-serve se apoyan en esa infraestructura ya adoptada.
+Capa de inteligencia/orquestación sobre Salesforce, Adobe, Azure, Google y sus LLMs. **Jurisdicción: GDPR (España/UE).** Dos tratamientos de dato: first-party PII del fan vía **clean room** (sin exponer PII a la marca; dictamen legal es gate de Fase 1); datos públicos del hincha **agregados/anonimizados** para el primer valor.
 
 ## Visión
 
-En 2-3 años, el estándar por el cual una entidad deportiva demuestra y entrega valor de negocio a sus patrocinadores —y por el cual un CMO justifica y multiplica su inversión en patrocinio—, convirtiendo el patrocinio de un gasto de visibilidad en un motor de crecimiento medible y accionable. **[SUPUESTO]**
+En 2-3 años, el estándar por el cual una entidad deportiva demuestra y entrega valor de negocio a sus patrocinadores, y por el cual un CMO justifica y multiplica su inversión — convirtiendo el patrocinio de gasto de visibilidad en motor de crecimiento medible y accionable. **[SUPUESTO]**
 
-## Preguntas abiertas (para el PRD)
+## Precondiciones y decisiones abiertas (gestionadas en el PRD)
 
-- **Modelo de negocio:** definido — ingresos del consultor vía la consultora (servicios por identificación/desarrollo/captura de oportunidades) y **precio por valor** hacia el cliente (paga cuando la herramienta reporta valor medible, no suscripción). Pendiente: cómo se **define y certifica "el valor medible"** que dispara el cobro, y cómo se reparte el valor de renovaciones/primas entre entidad y consultora.
-- **La medición como infraestructura de cobro:** aunque medir no es el *corazón* del producto, el precio por valor **exige** medir y certificar el valor reportado de forma creíble. El PRD debe definir esa mecánica (qué cuenta como valor, cómo se atribuye, cómo se audita).
-- **Fuentes de datos del fan:** qué first-party data tiene la propiedad y cómo habilita la precisión.
-- **Catálogo de activaciones:** qué activaciones explota el copiloto y cómo se conectan a datos.
-- **Grado de autonomía / self-serve:** qué se automatiza vs. qué requiere aprobación; cómo sale la agencia del loop.
-- **Estrategia de integración:** qué conectores priorizar (Salesforce, Adobe, Azure, Google, LLMs); modelo LLM propio vs. del cliente.
-- **MVP:** qué entrega valor inmediato y construye la escena héroe ante el board desde el día uno.
+Decididas: mercado (LaLiga), ICP dual con beachhead de ciclo corto legal, cobro desacoplado del piloto, integración sigue al piloto (default Salesforce, LLM del proveedor), foso = metodología + benchmark. Precondiciones de Fase 1 (acciones reales, §10 del PRD): term sheet con una propiedad (P-1), estándar de evidencia validado con un CFO (P-2), diagnóstico de madurez de datos + base legal GDPR (P-4), go-to-market (P-5).
