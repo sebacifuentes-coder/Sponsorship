@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arquitectura — Copiloto de Patrocinio Deportivo</title>
+<style>
+  :root{
+    --bg:#0e1116; --panel:#171c24; --panel2:#1f2630; --ink:#e7edf5; --muted:#9fb0c3;
+    --cian:#22d3ee; --cian-d:#0e7490; --lime:#a3e635; --amber:#f59e0b; --line:#2a3340;
+    --ok:#34d399; --warn:#f87171;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55}
+  .wrap{max-width:980px;margin:0 auto;padding:40px 22px 80px}
+  header h1{font-size:30px;margin:0 0 6px;letter-spacing:-.5px}
+  header p{color:var(--muted);margin:0;font-size:16px}
+  .tag{display:inline-block;font-size:12px;color:var(--cian);border:1px solid var(--cian-d);border-radius:999px;padding:3px 10px;margin-top:14px}
+  h2{font-size:20px;margin:46px 0 10px;border-left:3px solid var(--cian);padding-left:12px}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  @media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr}}
+  .plane{border-radius:14px;padding:18px;border:1px solid var(--line)}
+  .plane.light{background:linear-gradient(180deg,#0b2630,#141b24);border-color:var(--cian-d)}
+  .plane.deep{background:linear-gradient(180deg,#241b0b,#1b1812);border-color:#7c5e1a}
+  .plane h3{margin:0 0 4px;font-size:16px}
+  .plane .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+  .light .lbl{color:var(--cian)} .deep .lbl{color:var(--amber)}
+  .plane ul{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:14px}
+  .step{display:flex;gap:14px;align-items:flex-start;margin:0 0 14px}
+  .num{flex:0 0 34px;height:34px;border-radius:50%;background:var(--cian);color:#04222a;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .step b{color:var(--ink)} .step p{margin:2px 0 0;color:var(--muted);font-size:14px}
+  .rule{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:13px 15px;margin:0 0 10px}
+  .rule .id{color:var(--lime);font-weight:700;font-size:13px}
+  .rule p{margin:3px 0 0;font-size:14px;color:var(--muted)}
+  .pill{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:4px 6px 0 0;font-size:13px}
+  .pill b{color:var(--cian)}
+  .privacy{background:linear-gradient(180deg,#0c2118,#141b24);border:1px solid #1f6b4a;border-radius:14px;padding:18px}
+  .privacy .no{color:var(--warn);font-weight:700}
+  .privacy .yes{color:var(--ok);font-weight:700}
+  footer{margin-top:50px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:18px}
+  .svgbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Arquitectura — Copiloto de Patrocinio Deportivo</h1>
+    <p>Explicador visual, sin jerga. Cómo está pensado el sistema y por qué.</p>
+    <span class="tag">Spine v final · 9 decisiones · MetodoBMAD</span>
+  </header>
+
+  <h2>La idea en una imagen: dos planos</h2>
+  <p class="sub">El sistema tiene dos "motores" que funcionan por separado. Uno da valor en minutos; el otro profundiza con el tiempo, sin frenar al primero.</p>
+  <div class="grid2">
+    <div class="plane light">
+      <div class="lbl">Plano ligero · valor en &lt; 10 min</div>
+      <h3>Lo que el CMO ve enseguida</h3>
+      <ul>
+        <li>Usa <b>datos públicos</b> del club y del hincha (qué busca, consume, opina).</li>
+        <li>Genera un mapa de oportunidades + una activación con IA.</li>
+        <li>No necesita PII ni integraciones complejas.</li>
+        <li>Es el primer valor — y el argumento de venta.</li>
+      </ul>
+    </div>
+    <div class="plane deep">
+      <div class="lbl">Plano profundo · progresivo</div>
+      <h3>Lo que llega después, en segundo plano</h3>
+      <ul>
+        <li><b>Clean room</b> con los datos first-party del fan (aislados).</li>
+        <li>Conectores con Salesforce / Adobe.</li>
+        <li>Motor de valor medible (atribución auditable).</li>
+        <li><b>Nunca bloquea</b> al plano ligero; solo eleva la precisión.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>El recorrido del usuario</h2>
+  <div class="card">
+    <div class="step"><div class="num">1</div><div><b>Entra y obtiene valor en minutos</b><p>Sobre datos públicos del club y del hincha, el copiloto le muestra oportunidades priorizadas y un concepto de activación. Menos de 10 minutos, 3 pasos o menos.</p></div></div>
+    <div class="step"><div class="num">2</div><div><b>Genera y aprueba la activación con IA</b><p>El ciclo lento con la agencia se comprime: crear, ajustar y aprobar dentro de la herramienta.</p></div></div>
+    <div class="step"><div class="num">3</div><div><b>Implementa de forma autónoma</b><p>Publica por un canal conectado, sin depender de la agencia donde el cliente puede solo.</p></div></div>
+    <div class="step"><div class="num">4</div><div><b>Demuestra el impacto ante el board</b><p>Con la integración profunda ya corriendo, obtiene evidencia de ROI atribuible y certificada.</p></div></div>
+  </div>
+
+  <h2>La frontera de datos (privacidad por diseño)</h2>
+  <p class="sub">Cumplir GDPR no es un añadido: está construido en la arquitectura.</p>
+  <div class="privacy">
+    <p><span class="no">NUNCA cruza:</span> los datos personales del fan (PII) jamás llegan a la marca ni al plano ligero. Viven aislados en el <b>clean room</b>.</p>
+    <p><span class="yes">SÍ cruza:</span> solo <b>segmentos agregados y anónimos</b> (catálogo cerrado, con un mínimo de personas por segmento para que nadie sea identificable).</p>
+  </div>
+
+  <h2>El sistema, por dentro</h2>
+  <div class="svgbox">
+  <svg viewBox="0 0 900 320" width="100%" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,Segoe UI,Roboto,Arial" font-size="13">
+    <defs>
+      <marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#9fb0c3"/></marker>
+    </defs>
+    <!-- light plane -->
+    <rect x="20" y="30" width="380" height="120" rx="12" fill="#0b2630" stroke="#0e7490"/>
+    <text x="36" y="54" fill="#22d3ee" font-weight="700">Plano ligero</text>
+    <rect x="36" y="66" width="160" height="64" rx="8" fill="#141b24" stroke="#2a3340"/>
+    <text x="50" y="92" fill="#e7edf5">Web app + API</text>
+    <text x="50" y="112" fill="#9fb0c3" font-size="11">(lo que ve el CMO)</text>
+    <rect x="216" y="66" width="168" height="64" rx="8" fill="#141b24" stroke="#2a3340"/>
+    <text x="230" y="92" fill="#e7edf5">Inteligencia pública</text>
+    <text x="230" y="112" fill="#9fb0c3" font-size="11">club + hincha · sin PII</text>
+    <!-- core -->
+    <rect x="330" y="180" width="240" height="60" rx="10" fill="#1f2630" stroke="#a3e635"/>
+    <text x="360" y="205" fill="#a3e635" font-weight="700">Núcleo (dominio)</text>
+    <text x="360" y="225" fill="#9fb0c3" font-size="11">oportunidades · activaciones · valor</text>
+    <!-- deep plane -->
+    <rect x="500" y="30" width="380" height="120" rx="12" fill="#241b0b" stroke="#7c5e1a"/>
+    <text x="516" y="54" fill="#f59e0b" font-weight="700">Plano profundo</text>
+    <rect x="516" y="66" width="160" height="64" rx="8" fill="#1b1812" stroke="#2a3340"/>
+    <text x="530" y="92" fill="#e7edf5">Clean Room</text>
+    <text x="530" y="112" fill="#9fb0c3" font-size="11">first-party · PII aislada</text>
+    <rect x="692" y="66" width="172" height="64" rx="8" fill="#1b1812" stroke="#2a3340"/>
+    <text x="706" y="92" fill="#e7edf5">Conectores + valor</text>
+    <text x="706" y="112" fill="#9fb0c3" font-size="11">Salesforce/Adobe · atribución</text>
+    <!-- adapters -->
+    <rect x="330" y="270" width="240" height="38" rx="8" fill="#171c24" stroke="#2a3340"/>
+    <text x="352" y="294" fill="#9fb0c3">Adaptadores (LLM, martech, datos, clean room)</text>
+    <!-- arrows -->
+    <line x1="226" y1="150" x2="400" y2="185" stroke="#9fb0c3" marker-end="url(#ar)"/>
+    <line x1="640" y1="150" x2="500" y2="185" stroke="#9fb0c3" marker-end="url(#ar)"/>
+    <line x1="450" y1="270" x2="450" y2="242" stroke="#9fb0c3" marker-end="url(#ar)"/>
+    <line x1="596" y1="98" x2="404" y2="98" stroke="#34d399" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+    <text x="430" y="20" fill="#34d399" font-size="11">solo segmentos agregados (sin PII) →</text>
+  </svg>
+  </div>
+  <p class="sub" style="margin-top:8px">Todas las flechas apuntan al núcleo: el corazón del sistema no depende de ninguna herramienta externa, así que cambiar de proveedor no obliga a reescribir.</p>
+
+  <h2>Las 9 reglas que mantienen todo coherente</h2>
+  <div class="rule"><span class="id">AD-1 · Doble plano</span><p>El plano ligero nunca depende del profundo. Si el profundo falla, el ligero sigue dando valor y marca la precisión como "pendiente".</p></div>
+  <div class="rule"><span class="id">AD-2 · Un solo lenguaje</span><p>Todo en TypeScript con Next.js + Supabase + Vercel AI SDK. Rápido de construir, limpio para el desarrollador.</p></div>
+  <div class="rule"><span class="id">AD-3 · PII aislada</span><p>Los datos personales del fan nunca cruzan a la marca ni al plano ligero. Solo cruzan agregados anónimos.</p></div>
+  <div class="rule"><span class="id">AD-4 · Valor medible auditable</span><p>La forma de medir se versiona y se firma; cada cobro se apoya en evidencia que se puede auditar. Quien certifica no es quien cobra.</p></div>
+  <div class="rule"><span class="id">AD-5 · Proveedores enchufables</span><p>Salesforce, Adobe o el LLM entran por "enchufes" estándar. Cambiar de proveedor no toca el corazón del sistema.</p></div>
+  <div class="rule"><span class="id">AD-6 · Secretos seguros</span><p>Las claves nunca van en el código. Tres entornos: tu máquina → vista previa → producción.</p></div>
+  <div class="rule"><span class="id">AD-7 · Un dueño por dato</span><p>Cada tipo de información tiene un único módulo responsable de cambiarlo. Evita que dos piezas se pisen.</p></div>
+  <div class="rule"><span class="id">AD-8 · Segmentos sin re-identificación</span><p>El clean room solo entrega segmentos pre-armados, con un mínimo de personas, para que nadie sea identificable.</p></div>
+  <div class="rule"><span class="id">AD-9 · Roles y aislamiento</span><p>Cada actor (consultor, propiedad, marca) ve solo lo suyo; una propiedad nunca ve datos de otra. La marca nunca puede leer la PII.</p></div>
+
+  <h2>Las herramientas (el stack)</h2>
+  <div class="card">
+    <span class="pill"><b>Next.js 16</b> · la app web</span>
+    <span class="pill"><b>Supabase</b> · base de datos, login, archivos</span>
+    <span class="pill"><b>Vercel AI SDK</b> · orquesta los LLM</span>
+    <span class="pill"><b>Azure / Google</b> · proveedor del LLM</span>
+    <span class="pill"><b>Tailwind + shadcn</b> · la interfaz</span>
+    <span class="pill"><b>Vercel</b> · donde vive la app</span>
+  </div>
+
+  <footer>
+    Documento de apoyo no técnico. El contrato técnico completo (para el desarrollador) está en <code>ARCHITECTURE-SPINE.md</code>.<br>
+    Proyecto MetodoBMAD · Seba Cifuentes · 2026-06-27
+  </footer>
+</div>
+</body>
+</html>

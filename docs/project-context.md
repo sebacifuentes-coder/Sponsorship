@@ -13,13 +13,16 @@ Este proyecto se opera al más alto estándar de gobernanza y documentación. Re
 5. **Calidad verificada.** Los artefactos clave pasan por el reviewer gate de BMAD (rúbrica + adversarial) antes de cerrarse; los hallazgos se resuelven o se elevan a riesgos/precondiciones con dueño.
 6. **Versionado disciplinado.** Todo avance se versiona en Git y se publica a GitHub para revisión del desarrollador (`git add . && git commit -m "..." && git push`). Mensajes de commit descriptivos.
 7. **Honestidad sobre completitud aparente.** Se prefiere nombrar lo que no está resuelto (riesgos, precondiciones) antes que aparentar certeza.
+8. **Continuidad entre interfaces (no negociable).** Ante cualquier riesgo de pérdida de información o de caída de rendimiento (contexto saturado, cambio de herramienta, salto de Cowork a Claude Code/VS Code), se genera de inmediato un **paquete de continuidad**: un documento de handoff con (a) el estado actual del proyecto, (b) la lista exacta de documentos a analizar **ANTES** de ejecutar, y (c) el prompt correcto para retomar en la nueva interfaz. **Ninguna ejecución en una interfaz nueva comienza sin antes analizar la documentación previa.** El handoff vigente vive en `docs/HANDOFF-fase4-claude-code.md`.
 
 ## 2. Estado actual
 
 - **Fase 1 (Análisis) — completa.** Brainstorming + intent doc.
 - **Fase 2 (Planificación) — completa.** Product Brief (`ready`) y PRD (`final`, v2.4, grade de rúbrica: Good tras dos rondas de gate).
-- **Fase 3 (Solución) — pendiente.** Arquitectura, épicas e historias.
-- **Fase 4 (Implementación) — pendiente.**
+- **Fase 3 (Solución) — completa.** Arquitectura (spine `final`, 9 decisiones), épicas e historias (`epics.md` `final`: 5 épicas, 23 historias, revisadas por party multi-agente).
+- **Fase 4 (Implementación) — siguiente, en Claude Code / VS Code.** Ver `docs/HANDOFF-fase4-claude-code.md`.
+
+**Decisiones de arquitectura (resumen):** monolito modular de doble plano con puertos y adaptadores; stack TypeScript (Next.js 16 + Supabase + Vercel AI SDK); PII aislada en clean room (solo cruzan segmentos agregados); valor medible versionado y auditable (certificación separada del cobro); proveedores tras adaptadores; roles + RLS + multi-tenant por Propiedad. Detalle en `ARCHITECTURE-SPINE.md`.
 
 ## 3. Síntesis del producto
 
@@ -45,6 +48,8 @@ Estructura de tres jugadores: **Consultor** (construye/provee, ingresos vía con
 | **PRD (v2.4, final)** | Verdad vigente y detallada | `_bmad-output/planning-artifacts/prds/prd-MetodoBMAD-2026-06-27/prd.md` |
 | Product Brief (ready) | Resumen ejecutivo alineado al PRD | `_bmad-output/planning-artifacts/briefs/brief-MetodoBMAD-2026-06-27/brief.md` |
 | Reportes de validación | Resultado del reviewer gate | `.../prds/.../validation-report.{html,md}` |
+| **Architecture Spine (final)** | Contrato técnico de arquitectura | `_bmad-output/planning-artifacts/architecture/.../ARCHITECTURE-SPINE.md` |
+| Explicador de arquitectura | Versión visual no técnica (para Seba) | `.../architecture/.../explicador-arquitectura.html` |
 | Intent doc (histórico) | Génesis del brainstorming (Fase 1) | `_bmad-output/brainstorming/brainstorm-.../brainstorm-intent.md` |
 | `.memlog.md` (por workflow) | Memoria/auditoría de decisiones | en cada carpeta de workflow |
 | Este documento | Contexto maestro + estándar | `docs/project-context.md` |
@@ -59,4 +64,4 @@ P-1 term sheet con una propiedad · P-2 estándar de evidencia validado con un C
 
 ## 8. Próximo paso
 
-Fase 3: arquitectura con Winston — diseñar el doble camino del TTFV (primer valor en <10 min sobre señales públicas del hincha + integración profunda con clean room por detrás), luego épicas e historias.
+Planificación (Fases 1-3) completa. **Fase 4 — Implementación** se ejecuta en **Claude Code / VS Code conectado a Claude**, empezando por la Épica 1. Antes de cualquier ejecución, leer la documentación previa según `docs/HANDOFF-fase4-claude-code.md`.

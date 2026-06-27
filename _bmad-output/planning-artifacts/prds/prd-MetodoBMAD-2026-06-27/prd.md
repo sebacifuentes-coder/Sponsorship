@@ -3,7 +3,7 @@ title: "Copiloto de Patrocinio Deportivo"
 status: final
 created: 2026-06-27
 updated: 2026-06-27
-revision: v2.4 (datos del hincha: intención, consumo, opinión, narrativa)
+revision: v2.5 (contexto de marca y patrocinio para personalización: FR-15 a FR-18)
 source_brief: ../../briefs/brief-MetodoBMAD-2026-06-27/brief.md
 source_intent: ../../../brainstorming/brainstorm-patrocinio-valor-datos-ia-2026-06-27/brainstorm-intent.md
 ---
@@ -86,6 +86,10 @@ El Copiloto es esa pieza: una **capa de inteligencia y orquestación** —web ap
 - **Valor medible (v1)** — impacto de negocio **directamente trazable** a una Activación (p. ej. conversiones con código/UTM/cupón) dentro de la ventana de atribución acordada. Certificado y auditable.
 - **Precio por valor** — modelo de cobro: el cliente paga cuando se certifica Valor medible; no es suscripción SaaS.
 - **Evidencia de ROI** — informe atribuible para el board, derivado del Valor medible.
+- **Contexto de marca y patrocinio** — conjunto de inputs que personalizan recomendaciones y generación: Derechos contratados, ADN de marca, Objetivos de comunicación y contexto adicional.
+- **Derechos contratados** — catálogo de activos/derechos del patrocinio disponibles para activar por una Marca (camiseta, LED, hospitality, contenido, datos, naming, etc.).
+- **ADN de marca** — valores, tono de voz, identidad visual y posicionamiento de la Marca que guían la generación.
+- **Objetivos de comunicación** — metas de la campaña/marca (awareness, consideración, conversión, lanzamiento, etc.) que orientan la priorización.
 
 ## 4. Features
 
@@ -185,6 +189,25 @@ El CMO obtiene al menos una Oportunidad accionable y un concepto de Activación 
 - En la primera sesión (< 10 min, ≤ 3 pasos), el sistema entrega ≥1 Oportunidad + una previsualización de Activación.
 - El primer valor se computa sobre datos públicos/agregados del **club y del hincha** (no first-party PII del fan) y no exige conectar Salesforce/Adobe ni el clean room.
 - La integración profunda puede completarse después y **eleva la precisión** sin haber bloqueado el primer valor.
+
+### 4.9 Contexto de marca y patrocinio (personalización)
+**Descripción:** para que las oportunidades y las generaciones sean **personalizadas y no genéricas**, el sistema captura y mantiene el contexto del patrocinio y de la marca, que alimenta FR-3, FR-4 y FR-5. **Captura progresiva y TTFV-safe:** lo mínimo se pre-carga (la Propiedad/Consultor conocen los derechos; el ADN de marca puede pre-rellenarse desde la presencia pública de la marca con IA) y se enriquece con el tiempo; **nunca bloquea el primer valor**. Realiza UJ-1, UJ-3.
+
+#### FR-15: Gestionar derechos contratados del patrocinio
+El Consultor/Propiedad puede registrar y mantener el catálogo de **Derechos contratados** (activos disponibles para activar: camiseta, LED, hospitality, contenido, datos, naming, etc.) por Marca.
+**Consecuencias (testables):** las Oportunidades (FR-3) solo proponen activaciones sobre derechos efectivamente contratados.
+
+#### FR-16: Capturar ADN de marca
+El sistema captura el **ADN de marca** (valores, tono de voz, identidad visual, posicionamiento), con opción de pre-relleno asistido por IA desde la presencia pública de la marca.
+**Consecuencias (testables):** la generación (FR-5) respeta el tono e identidad del ADN registrado; el CMO puede editar el pre-relleno.
+
+#### FR-17: Capturar objetivos de comunicación
+El CMO puede registrar los **Objetivos de comunicación/campaña** (awareness, consideración, conversión, lanzamiento, etc.).
+**Consecuencias (testables):** la priorización (FR-4) ordena las Oportunidades según el objetivo vigente.
+
+#### FR-18: Capturar contexto adicional
+El sistema captura contexto adicional relevante: audiencia objetivo de la Marca, calendario, productos/mensajes a impulsar, restricciones de marca y mercados.
+**Consecuencias (testables):** las recomendaciones y generaciones referencian este contexto; sin contexto mínimo, el sistema usa valores públicos por defecto y marca la personalización como "básica".
 
 ## 5. No-Goals (explícitos)
 
