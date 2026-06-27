@@ -20,7 +20,7 @@ Este proyecto se opera al más alto estándar de gobernanza y documentación. Re
 - **Fase 1 (Análisis) — completa.** Brainstorming + intent doc.
 - **Fase 2 (Planificación) — completa.** Product Brief (`ready`) y PRD (`final`, v2.4, grade de rúbrica: Good tras dos rondas de gate).
 - **Fase 3 (Solución) — completa.** Arquitectura (spine `final`, 9 decisiones), épicas e historias (`epics.md` `final`: 5 épicas, 23 historias, revisadas por party multi-agente).
-- **Fase 4 (Implementación) — siguiente, en Claude Code / VS Code.** Ver `docs/HANDOFF-fase4-claude-code.md`.
+- **Fase 4 (Implementación) — en curso, en Claude Code / VS Code.** ✅ **Épica 1 (Cimientos + Primer valor / TTFV) completa** (historias 1.1–1.5, pusheadas a `main`): stack Next.js 16 + Supabase + Vercel AI SDK + Tailwind/shadcn, estructura modular del doble plano, RBAC básico, ingesta de datos públicos (semilla tras `PublicDataPort`), motor de oportunidades + priorización versionada, y onboarding de primer valor con TTFV instrumentado. Próximo: Épica 2. Detalle y prompt de arranque en `docs/HANDOFF-fase4-claude-code.md` (§1.5 = lo ya construido).
 
 **Decisiones de arquitectura (resumen):** monolito modular de doble plano con puertos y adaptadores; stack TypeScript (Next.js 16 + Supabase + Vercel AI SDK); PII aislada en clean room (solo cruzan segmentos agregados); valor medible versionado y auditable (certificación separada del cobro); proveedores tras adaptadores; roles + RLS + multi-tenant por Propiedad. Detalle en `ARCHITECTURE-SPINE.md`.
 
