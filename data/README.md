@@ -14,6 +14,7 @@ La PII del fan vive **solo** en el Clean Room. Nunca cruza al plano ligero ni a 
 | Archivo | Qué establece | Historia |
 |---|---|---|
 | `migrations/0001_rbac_basico.sql` | Roles (`rol_usuario`), tenancy (`propiedades`, `marcas`), `perfiles` y RLS básico por rol/tenant (AD-9) | 1.1 |
+| `migrations/0002_inteligencia_publica.sql` | Almacén de Inteligencia Pública: tabla `senales_publicas` (agregadas, sin PII; cohorte ≥ 50), procedencia + fecha, RLS por Propiedad (AD-3, AD-9) | 1.2 |
 
 ### Cómo aplicarlas
 
