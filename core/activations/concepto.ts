@@ -17,6 +17,21 @@ export interface BriefMinimo {
   objetivo: string;
 }
 
+/** Nivel de personalización del concepto (espejo de core/context, sin acoplar). */
+export type NivelConcepto = 'basica' | 'personalizada';
+
+/**
+ * Contexto de marca para personalizar el concepto (Historia 2.5). Campos
+ * primitivos para no acoplar `core/activations` a `core/context`: el borde los
+ * extrae del ADN y del contexto adicional. Sin contexto → concepto básico.
+ */
+export interface ContextoConcepto {
+  tonoVoz?: string;
+  valores?: string[];
+  audienciaObjetivo?: string;
+  restriccionesMarca?: string;
+}
+
 export interface ConceptoActivacion {
   oportunidadId: string;
   titulo: string;
@@ -24,6 +39,10 @@ export interface ConceptoActivacion {
   canalSugerido: string;
   segmento: string;
   llamadaAccion: string;
+  /** Nivel de personalización: básica (datos públicos) vs personalizada (contexto). */
+  personalizacion: NivelConcepto;
+  /** Bloques de contexto efectivamente referenciados (vacío si básica). */
+  referencias: string[];
   /** Aviso honesto: concepto base determinista; la creatividad con IA es la Épica 3. */
   nota: string;
 }
@@ -48,25 +67,58 @@ const LLAMADA_POR_METRICA: Record<MetricaNegocio, string> = {
 /**
  * Concibe un concepto de activación sobre la oportunidad de mayor valor.
  * Determinista y explicable; pensado para el primer valor en minutos.
+ *
+ * Si se pasa `contexto` con ADN/audiencia (Historia 2.5), el concepto lo
+ * REFERENCIA (tono de voz, valores, audiencia, restricciones) y se marca como
+ * "personalizada". Sin contexto útil, usa el ángulo público por defecto y marca
+ * la personalización como "básica".
  */
 export function concebirConcepto(
   oportunidad: OportunidadPriorizada,
   brief: BriefMinimo,
+  contexto?: ContextoConcepto,
 ): ConceptoActivacion {
   const canal = CANAL_POR_CATEGORIA[oportunidad.categoriaSenal];
   const llamada = LLAMADA_POR_METRICA[oportunidad.metricaNegocio];
 
-  const anguloMensaje =
-    `Para ${brief.marca}, con objetivo de ${brief.objetivo}: conectar con ${oportunidad.segmentoObjetivo.toLowerCase()} ` +
+  const segmento = contexto?.audienciaObjetivo?.trim()
+    ? contexto.audienciaObjetivo.trim()
+    : oportunidad.segmentoObjetivo;
+
+  const referencias: string[] = [];
+  let anguloMensaje =
+    `Para ${brief.marca}, con objetivo de ${brief.objetivo}: conectar con ${segmento.toLowerCase()} ` +
     `a partir de "${oportunidad.senalOrigenEtiqueta}", apalancando el patrocinio del club.`;
+
+  const valores = contexto?.valores?.filter((v) => v.trim().length > 0) ?? [];
+  if (valores.length > 0) {
+    referencias.push('valores de marca');
+    anguloMensaje += ` Enmarcado en los valores de la marca (${valores.join(', ')}).`;
+  }
+  if (contexto?.tonoVoz?.trim()) {
+    referencias.push('tono de voz (ADN)');
+    anguloMensaje += ` Tono: ${contexto.tonoVoz.trim()}`;
+  }
+  if (contexto?.audienciaObjetivo?.trim()) {
+    referencias.push('audiencia objetivo');
+  }
+
+  const restriccion = contexto?.restriccionesMarca?.trim();
+  if (restriccion) referencias.push('restricciones de marca');
+
+  const nota = restriccion
+    ? `Respetar las restricciones de marca: ${restriccion}. Concepto base determinista del plano ligero; la generación creativa con IA llega en la Épica 3 (FR-5/FR-6).`
+    : 'Concepto base determinista del plano ligero. La generación creativa con IA y el ciclo de aprobación llegan en la Épica 3 (FR-5/FR-6).';
 
   return {
     oportunidadId: oportunidad.id,
     titulo: `Concepto: ${oportunidad.titulo}`,
     anguloMensaje,
     canalSugerido: canal,
-    segmento: oportunidad.segmentoObjetivo,
+    segmento,
     llamadaAccion: llamada,
-    nota: 'Concepto base determinista del plano ligero. La generación creativa con IA y el ciclo de aprobación llegan en la Épica 3 (FR-5/FR-6).',
+    personalizacion: referencias.length > 0 ? 'personalizada' : 'basica',
+    referencias,
+    nota,
   };
 }

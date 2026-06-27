@@ -25,6 +25,12 @@ export const MARCAS_SEMILLA: MarcaSemilla[] = [
     propiedadId: DEMO_PROPIEDAD_ID,
     nombre: 'Marca Visibilidad Demo (solo derechos físicos)',
   },
+  {
+    // Sin contexto sembrado: demuestra el fallback de personalización "básica".
+    marcaId: '00000000-0000-4000-8000-0000000000a3',
+    propiedadId: DEMO_PROPIEDAD_ID,
+    nombre: 'Marca Nueva Demo (sin contexto)',
+  },
 ];
 
 export function marcaSemillaPorId(marcaId: string): MarcaSemilla | undefined {
