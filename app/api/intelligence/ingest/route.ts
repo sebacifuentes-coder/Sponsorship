@@ -24,9 +24,7 @@ import {
 } from '@/core/intelligence';
 import { SeedPublicDataAdapter } from '@/adapters/publicdata/seed-public-data-adapter';
 import { SupabaseAlmacenInteligenciaPublica } from '@/lib/repositories/intelligence-repository';
-
-/** Propiedad de demostración para el modo local sin Supabase. */
-const DEMO_PROPIEDAD_ID = '00000000-0000-4000-8000-000000000001';
+import { DEMO_PROPIEDAD_ID } from '@/lib/intelligence/leer-senales';
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

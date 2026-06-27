@@ -62,7 +62,9 @@ export default function Home() {
       </section>
 
       <div className="flex gap-3">
-        <Button>Empezar (próx. Historia 1.5)</Button>
+        <Button asChild>
+          <a href="/oportunidades">Ver mapa de oportunidades</a>
+        </Button>
         <Button variant="outline" asChild>
           <a
             href="https://github.com/sebacifuentes-coder/Sponsorship"
