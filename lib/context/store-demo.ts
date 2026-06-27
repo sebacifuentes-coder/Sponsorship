@@ -12,7 +12,11 @@
  * llega al configurar Supabase (`data/migrations/0004_contexto_derechos.sql`).
  */
 
-import { RepositorioAdnMarcaEnMemoria, RepositorioDerechosEnMemoria } from '@/core/context';
+import {
+  RepositorioAdnMarcaEnMemoria,
+  RepositorioDerechosEnMemoria,
+  RepositorioObjetivosEnMemoria,
+} from '@/core/context';
 import { DEMO_MARCA_ID, MARCAS_SEMILLA } from '@/lib/context/marcas-semilla';
 import { DEMO_PROPIEDAD_ID } from '@/lib/intelligence/clubes-semilla';
 
@@ -23,6 +27,7 @@ import { DEMO_PROPIEDAD_ID } from '@/lib/intelligence/clubes-semilla';
 const claveGlobal = globalThis as unknown as {
   __derechosDemo__?: Promise<RepositorioDerechosEnMemoria>;
   __adnDemo__?: RepositorioAdnMarcaEnMemoria;
+  __objetivosDemo__?: RepositorioObjetivosEnMemoria;
 };
 
 async function sembrar(repo: RepositorioDerechosEnMemoria): Promise<void> {
@@ -61,4 +66,12 @@ export function repositorioAdnDemo(): RepositorioAdnMarcaEnMemoria {
     claveGlobal.__adnDemo__ = new RepositorioAdnMarcaEnMemoria();
   }
   return claveGlobal.__adnDemo__;
+}
+
+/** Repositorio demo de objetivos de comunicación (singleton de proceso). */
+export function repositorioObjetivosDemo(): RepositorioObjetivosEnMemoria {
+  if (!claveGlobal.__objetivosDemo__) {
+    claveGlobal.__objetivosDemo__ = new RepositorioObjetivosEnMemoria();
+  }
+  return claveGlobal.__objetivosDemo__;
 }

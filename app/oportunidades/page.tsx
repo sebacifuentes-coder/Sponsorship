@@ -2,8 +2,9 @@ import Link from "next/link";
 
 import { leerSenalesPublicas, DEMO_PROPIEDAD_ID } from "@/lib/intelligence/leer-senales";
 import { generarOportunidades, priorizarOportunidades } from "@/core/opportunities";
-import { limitarADerechosContratados } from "@/core/context";
+import { limitarADerechosContratados, metricasFavorecidas } from "@/core/context";
 import { leerDerechos } from "@/lib/context/leer-derechos";
+import { leerObjetivos } from "@/lib/context/objetivos-service";
 import { MARCAS_SEMILLA, marcaSemillaPorId } from "@/lib/context/marcas-semilla";
 import { OportunidadesLista } from "@/components/oportunidades-lista";
 import { MarcaSelector } from "@/components/marca-selector";
@@ -21,16 +22,27 @@ export default async function OportunidadesPage({
   const marca = marcaId ? marcaSemillaPorId(marcaId) : undefined;
 
   const senales = await leerSenalesPublicas(DEMO_PROPIEDAD_ID);
-  const todas = priorizarOportunidades(generarOportunidades(senales), senales);
+  const generadas = generarOportunidades(senales);
 
-  // Si hay una Marca seleccionada con derechos, se limita la propuesta a los
-  // derechos efectivamente contratados (FR-15). Sin marca → mapa público.
-  let oportunidades = todas;
+  // Con una Marca seleccionada: la priorización toma en cuenta sus objetivos de
+  // comunicación vigentes (FR-17, Historia 2.3) y la propuesta se limita a sus
+  // derechos contratados (FR-15). Sin marca → mapa público base (Historia 1.4).
+  let oportunidades = priorizarOportunidades(generadas, senales);
   let derechosCount = 0;
+  let objetivos: string[] = [];
   if (marca) {
-    const derechos = await leerDerechos(marca.marcaId);
+    const [derechos, objetivosMarca] = await Promise.all([
+      leerDerechos(marca.marcaId),
+      leerObjetivos(marca.marcaId),
+    ]);
+    objetivos = objetivosMarca;
     derechosCount = derechos.filter((d) => d.activo).length;
-    oportunidades = limitarADerechosContratados(todas, derechos);
+    const priorizadas = priorizarOportunidades(
+      generadas,
+      senales,
+      metricasFavorecidas(objetivosMarca),
+    );
+    oportunidades = limitarADerechosContratados(priorizadas, derechos);
   }
 
   const marcasPropiedad = MARCAS_SEMILLA.filter((m) => m.propiedadId === DEMO_PROPIEDAD_ID);
@@ -59,9 +71,17 @@ export default async function OportunidadesPage({
         {marca && (
           <span className="text-xs text-muted-foreground">
             Limitado a los {derechosCount} derecho{derechosCount === 1 ? "" : "s"}{" "}
-            contratado{derechosCount === 1 ? "" : "s"} de {marca.nombre} ·{" "}
+            contratado{derechosCount === 1 ? "" : "s"} de {marca.nombre}
+            {objetivos.length > 0 && (
+              <> · priorizado por objetivos: {objetivos.join(", ")}</>
+            )}{" "}
+            ·{" "}
             <Link href="/contexto/derechos" className="underline">
-              gestionar derechos
+              derechos
+            </Link>{" "}
+            ·{" "}
+            <Link href="/contexto/objetivos" className="underline">
+              objetivos
             </Link>
           </span>
         )}

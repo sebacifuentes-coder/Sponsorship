@@ -14,14 +14,21 @@
 import type { CategoriaSenal, SenalPublica } from '@/core/intelligence/senal';
 import type {
   Confianza,
+  MetricaNegocio,
   Oportunidad,
   OportunidadPriorizada,
 } from '@/core/opportunities/oportunidad';
 
 export const METODO_PRIORIZACION_VERSION = 'priorizacion-v1';
 
+/** Sufijo de versión cuando los objetivos de comunicación afinan la priorización. */
+export const SUFIJO_OBJETIVOS_VERSION = 'objetivos-v1';
+
 /** Alcance de referencia para saturar el factor de cohorte. */
 const ALCANCE_REFERENCIA = 50_000;
+
+/** Boost aplicado a una oportunidad cuya métrica alinea con el objetivo vigente. */
+const BOOST_OBJETIVO = 1.3;
 
 /** Peso de la categoría según su cercanía al negocio. */
 const PESO_CATEGORIA: Record<CategoriaSenal, number> = {
@@ -58,12 +65,19 @@ function clamp01(n: number): number {
 /**
  * Asigna valor potencial a una oportunidad usando su señal de origen y ordena
  * de mayor a menor estimado. Necesita las señales para leer alcance/intensidad.
+ *
+ * `metricasFavorecidas` (opcional, Historia 2.3): si se pasa el conjunto de
+ * métricas favorecidas por los objetivos de comunicación vigentes, las
+ * oportunidades cuya métrica alinea reciben un boost y suben en el orden. Si se
+ * omite o está vacío, la priorización es la de la Historia 1.4 (sin cambios).
  */
 export function priorizarOportunidades(
   oportunidades: Oportunidad[],
   senales: SenalPublica[],
+  metricasFavorecidas?: ReadonlySet<MetricaNegocio>,
 ): OportunidadPriorizada[] {
   const porId = new Map(senales.map((s) => [s.id, s]));
+  const aplicaObjetivos = Boolean(metricasFavorecidas && metricasFavorecidas.size > 0);
 
   const priorizadas = oportunidades.map((o): OportunidadPriorizada => {
     const senal = porId.get(o.senalOrigenId);
@@ -71,12 +85,19 @@ export function priorizarOportunidades(
 
     const alcance = senal ? factorAlcance(senal.tamanoCohorte) : 0.3;
     const intensidad = senal ? intensidadSenal(senal.valor, senal.unidad) : 0.3;
-    const estimado = Math.round(100 * peso * alcance * intensidad);
+    const base = 100 * peso * alcance * intensidad;
+
+    const favorecida = aplicaObjetivos && metricasFavorecidas!.has(o.metricaNegocio);
+    const factorObjetivo = favorecida ? BOOST_OBJETIVO : 1;
+    const estimado = Math.min(100, Math.round(base * factorObjetivo));
 
     const cohorte = senal?.tamanoCohorte ?? 0;
-    const supuesto = senal
+    const supuestoBase = senal
       ? `Peso de categoría ${peso.toFixed(2)} (${o.categoriaSenal}), alcance ≈ ${cohorte.toLocaleString('es-ES')} hinchas y señal "${senal.etiqueta}" (${senal.valor} ${senal.unidad}).`
       : 'Señal de origen no disponible; estimado conservador por defecto.';
+    const supuesto = favorecida
+      ? `${supuestoBase} Boost ×${BOOST_OBJETIVO} por alinear con el objetivo de comunicación vigente.`
+      : supuestoBase;
 
     return {
       ...o,
@@ -85,7 +106,9 @@ export function priorizarOportunidades(
         metrica: o.metricaNegocio,
         supuesto,
         confianza: senal ? confianzaDe(senal.tamanoCohorte) : 'baja',
-        metodoVersion: METODO_PRIORIZACION_VERSION,
+        metodoVersion: aplicaObjetivos
+          ? `${METODO_PRIORIZACION_VERSION}+${SUFIJO_OBJETIVOS_VERSION}`
+          : METODO_PRIORIZACION_VERSION,
       },
     };
   });

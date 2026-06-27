@@ -21,11 +21,9 @@ export const CLUBES_SEMILLA: ClubSemilla[] = [
   { propiedadId: '00000000-0000-4000-8000-000000000003', nombre: 'Deportivo Ribera' },
 ];
 
-export const OBJETIVOS_COMUNICACION = [
-  'awareness',
-  'consideracion',
-  'conversion',
-  'lanzamiento',
-] as const;
-
-export type ObjetivoComunicacion = (typeof OBJETIVOS_COMUNICACION)[number];
+// El catálogo canónico de objetivos vive en el dominio (core/context). Se
+// re-exporta aquí por compatibilidad con el onboarding (Historia 1.5).
+export {
+  OBJETIVOS_COMUNICACION,
+  type ObjetivoComunicacion,
+} from '@/core/context/objetivos';

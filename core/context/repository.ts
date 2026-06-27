@@ -10,6 +10,7 @@
 import type { MarcaId, PropiedadId } from '@/core/shared/tenant';
 import type { DerechoContratado, DerechoEntrada } from '@/core/context/derecho';
 import type { AdnEntrada, AdnMarca } from '@/core/context/adn-marca';
+import type { ObjetivoComunicacion } from '@/core/context/objetivos';
 
 export interface RepositorioDerechos {
   /** Lista los derechos contratados de una Marca. */
@@ -100,5 +101,51 @@ export class RepositorioAdnMarcaEnMemoria implements RepositorioAdnMarca {
     };
     this.porMarca.set(marcaId, adn);
     return { ...adn };
+  }
+}
+
+/** Objetivos de comunicación vigentes de una Marca (Historia 2.3). */
+export interface ObjetivosMarca {
+  marcaId: MarcaId;
+  propiedadId: PropiedadId;
+  objetivos: ObjetivoComunicacion[];
+  actualizadoEn: string;
+}
+
+export interface RepositorioObjetivos {
+  /** Objetivos vigentes de una Marca (lista vacía si no se han registrado). */
+  obtenerObjetivos(marcaId: MarcaId): Promise<ObjetivosMarca | null>;
+  /** Guarda (upsert) los objetivos vigentes. AD-7: muta el estado aquí. */
+  guardarObjetivos(
+    marcaId: MarcaId,
+    propiedadId: PropiedadId,
+    objetivos: ObjetivoComunicacion[],
+  ): Promise<ObjetivosMarca>;
+}
+
+/** Implementación en memoria de objetivos (tests / demo local — AD-1). */
+export class RepositorioObjetivosEnMemoria implements RepositorioObjetivos {
+  private readonly porMarca = new Map<MarcaId, ObjetivosMarca>();
+
+  constructor(private readonly ahora: () => string = () => new Date().toISOString()) {}
+
+  async obtenerObjetivos(marcaId: MarcaId): Promise<ObjetivosMarca | null> {
+    const o = this.porMarca.get(marcaId);
+    return o ? { ...o, objetivos: [...o.objetivos] } : null;
+  }
+
+  async guardarObjetivos(
+    marcaId: MarcaId,
+    propiedadId: PropiedadId,
+    objetivos: ObjetivoComunicacion[],
+  ): Promise<ObjetivosMarca> {
+    const registro: ObjetivosMarca = {
+      marcaId,
+      propiedadId,
+      objetivos: [...objetivos],
+      actualizadoEn: this.ahora(),
+    };
+    this.porMarca.set(marcaId, registro);
+    return { ...registro, objetivos: [...registro.objetivos] };
   }
 }

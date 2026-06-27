@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { leerSenalesPublicas } from '@/lib/intelligence/leer-senales';
 import { generarOportunidades, priorizarOportunidades } from '@/core/opportunities';
 import { concebirConcepto } from '@/core/activations';
+import { esObjetivoComunicacion, metricasFavorecidas } from '@/core/context';
 
 const cuerpoSchema = z.object({
   propiedadId: z.string().uuid(),
@@ -34,8 +35,18 @@ export async function POST(request: NextRequest) {
 
   const { propiedadId, marca, objetivo } = parsed.data;
 
+  // El objetivo del brief (Historia 1.5) ya afina la priorización (FR-17): las
+  // oportunidades alineadas con el objetivo elegido suben en el primer valor.
+  const favorecidas = esObjetivoComunicacion(objetivo)
+    ? metricasFavorecidas([objetivo])
+    : undefined;
+
   const senales = await leerSenalesPublicas(propiedadId);
-  const priorizadas = priorizarOportunidades(generarOportunidades(senales), senales);
+  const priorizadas = priorizarOportunidades(
+    generarOportunidades(senales),
+    senales,
+    favorecidas,
+  );
 
   if (priorizadas.length === 0) {
     return NextResponse.json(

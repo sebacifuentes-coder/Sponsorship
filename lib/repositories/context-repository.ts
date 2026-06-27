@@ -8,12 +8,19 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { MarcaId, PropiedadId } from '@/core/shared/tenant';
-import type { RepositorioAdnMarca, RepositorioDerechos } from '@/core/context';
+import type {
+  ObjetivosMarca,
+  RepositorioAdnMarca,
+  RepositorioDerechos,
+  RepositorioObjetivos,
+} from '@/core/context';
 import {
   type AdnEntrada,
   type AdnMarca,
   type DerechoContratado,
   type DerechoEntrada,
+  type ObjetivoComunicacion,
+  esObjetivoComunicacion,
   esTipoDerecho,
 } from '@/core/context';
 
@@ -155,5 +162,59 @@ export class SupabaseRepositorioAdnMarca implements RepositorioAdnMarca {
       throw new Error(`No se pudo guardar el ADN de marca: ${error.message}`);
     }
     return adnADominio(data as FilaAdn);
+  }
+}
+
+interface FilaObjetivos {
+  marca_id: string;
+  propiedad_id: string;
+  objetivos: string[];
+  actualizado_en: string;
+}
+
+function objetivosADominio(f: FilaObjetivos): ObjetivosMarca {
+  return {
+    marcaId: f.marca_id,
+    propiedadId: f.propiedad_id,
+    objetivos: (f.objetivos ?? []).filter(esObjetivoComunicacion),
+    actualizadoEn: f.actualizado_en,
+  };
+}
+
+export class SupabaseRepositorioObjetivos implements RepositorioObjetivos {
+  constructor(private readonly supabase: SupabaseClient) {}
+
+  async obtenerObjetivos(marcaId: MarcaId): Promise<ObjetivosMarca | null> {
+    const { data, error } = await this.supabase
+      .from('objetivos_comunicacion')
+      .select('*')
+      .eq('marca_id', marcaId)
+      .maybeSingle();
+    if (error) {
+      throw new Error(`No se pudieron leer los objetivos: ${error.message}`);
+    }
+    return data ? objetivosADominio(data as FilaObjetivos) : null;
+  }
+
+  async guardarObjetivos(
+    marcaId: MarcaId,
+    propiedadId: PropiedadId,
+    objetivos: ObjetivoComunicacion[],
+  ): Promise<ObjetivosMarca> {
+    const fila = {
+      marca_id: marcaId,
+      propiedad_id: propiedadId,
+      objetivos,
+      actualizado_en: new Date().toISOString(),
+    };
+    const { data, error } = await this.supabase
+      .from('objetivos_comunicacion')
+      .upsert(fila, { onConflict: 'marca_id' })
+      .select('*')
+      .single();
+    if (error) {
+      throw new Error(`No se pudieron guardar los objetivos: ${error.message}`);
+    }
+    return objetivosADominio(data as FilaObjetivos);
   }
 }
