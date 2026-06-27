@@ -1,0 +1,21 @@
+import { type NextRequest } from 'next/server';
+import { updateSession } from '@/lib/supabase/middleware';
+
+/**
+ * Proxy raíz (convención de Next.js 16, antes `middleware`).
+ * Refresca la sesión de Supabase en cada navegación.
+ */
+export async function proxy(request: NextRequest) {
+  return await updateSession(request);
+}
+
+export const config = {
+  matcher: [
+    /*
+     * Todas las rutas salvo estáticos e imágenes:
+     * - _next/static, _next/image
+     * - favicon.ico y archivos de imagen comunes
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
+};

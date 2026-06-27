@@ -24,6 +24,10 @@ out/
 .next/
 coverage/
 
+# TypeScript / Next.js (generados)
+*.tsbuildinfo
+next-env.d.ts
+
 # Entorno y secretos (NUNCA subir)
 .env
 .env.*
