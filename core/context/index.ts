@@ -1,0 +1,3 @@
+/** Barrel del módulo de Contexto de marca y patrocinio (plano ligero). */
+export * from '@/core/context/derecho';
+export * from '@/core/context/repository';
