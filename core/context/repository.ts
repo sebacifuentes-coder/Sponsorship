@@ -9,6 +9,7 @@
 
 import type { MarcaId, PropiedadId } from '@/core/shared/tenant';
 import type { DerechoContratado, DerechoEntrada } from '@/core/context/derecho';
+import type { AdnEntrada, AdnMarca } from '@/core/context/adn-marca';
 
 export interface RepositorioDerechos {
   /** Lista los derechos contratados de una Marca. */
@@ -57,5 +58,47 @@ export class RepositorioDerechosEnMemoria implements RepositorioDerechos {
     }));
     this.porMarca.set(marcaId, derechos);
     return derechos.map((d) => ({ ...d }));
+  }
+}
+
+export interface RepositorioAdnMarca {
+  /** Devuelve el ADN vigente de una Marca, o null si aún no se ha capturado. */
+  obtenerAdn(marcaId: MarcaId): Promise<AdnMarca | null>;
+  /** Guarda (upsert) el ADN de una Marca. AD-7: muta el estado de dominio aquí. */
+  guardarAdn(
+    marcaId: MarcaId,
+    propiedadId: PropiedadId,
+    entrada: AdnEntrada,
+  ): Promise<AdnMarca>;
+}
+
+/** Implementación en memoria del ADN de marca (tests / demo local — AD-1). */
+export class RepositorioAdnMarcaEnMemoria implements RepositorioAdnMarca {
+  private readonly porMarca = new Map<MarcaId, AdnMarca>();
+
+  constructor(private readonly ahora: () => string = () => new Date().toISOString()) {}
+
+  async obtenerAdn(marcaId: MarcaId): Promise<AdnMarca | null> {
+    const adn = this.porMarca.get(marcaId);
+    return adn ? { ...adn } : null;
+  }
+
+  async guardarAdn(
+    marcaId: MarcaId,
+    propiedadId: PropiedadId,
+    entrada: AdnEntrada,
+  ): Promise<AdnMarca> {
+    const adn: AdnMarca = {
+      marcaId,
+      propiedadId,
+      valores: entrada.valores,
+      tonoVoz: entrada.tonoVoz,
+      identidadVisual: entrada.identidadVisual,
+      posicionamiento: entrada.posicionamiento,
+      origen: entrada.origen,
+      actualizadoEn: this.ahora(),
+    };
+    this.porMarca.set(marcaId, adn);
+    return { ...adn };
   }
 }

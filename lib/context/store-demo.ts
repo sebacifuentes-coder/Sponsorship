@@ -12,7 +12,7 @@
  * llega al configurar Supabase (`data/migrations/0004_contexto_derechos.sql`).
  */
 
-import { RepositorioDerechosEnMemoria } from '@/core/context';
+import { RepositorioAdnMarcaEnMemoria, RepositorioDerechosEnMemoria } from '@/core/context';
 import { DEMO_MARCA_ID, MARCAS_SEMILLA } from '@/lib/context/marcas-semilla';
 import { DEMO_PROPIEDAD_ID } from '@/lib/intelligence/clubes-semilla';
 
@@ -22,6 +22,7 @@ import { DEMO_PROPIEDAD_ID } from '@/lib/intelligence/clubes-semilla';
 // sobrevive al hot-reload del dev server.
 const claveGlobal = globalThis as unknown as {
   __derechosDemo__?: Promise<RepositorioDerechosEnMemoria>;
+  __adnDemo__?: RepositorioAdnMarcaEnMemoria;
 };
 
 async function sembrar(repo: RepositorioDerechosEnMemoria): Promise<void> {
@@ -39,7 +40,7 @@ async function sembrar(repo: RepositorioDerechosEnMemoria): Promise<void> {
   ]);
 }
 
-/** Devuelve el repositorio demo (singleton de proceso), sembrándolo la primera vez. */
+/** Devuelve el repositorio demo de derechos (singleton de proceso), sembrándolo la primera vez. */
 export function repositorioDerechosDemo(): Promise<RepositorioDerechosEnMemoria> {
   if (!claveGlobal.__derechosDemo__) {
     claveGlobal.__derechosDemo__ = (async () => {
@@ -49,4 +50,15 @@ export function repositorioDerechosDemo(): Promise<RepositorioDerechosEnMemoria>
     })();
   }
   return claveGlobal.__derechosDemo__;
+}
+
+/**
+ * Repositorio demo de ADN de marca (singleton de proceso). Sin sembrar: el ADN
+ * arranca vacío para demostrar el flujo de pre-relleno → editar → guardar.
+ */
+export function repositorioAdnDemo(): RepositorioAdnMarcaEnMemoria {
+  if (!claveGlobal.__adnDemo__) {
+    claveGlobal.__adnDemo__ = new RepositorioAdnMarcaEnMemoria();
+  }
+  return claveGlobal.__adnDemo__;
 }

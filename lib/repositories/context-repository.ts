@@ -8,8 +8,14 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { MarcaId, PropiedadId } from '@/core/shared/tenant';
-import type { RepositorioDerechos } from '@/core/context';
-import { type DerechoContratado, type DerechoEntrada, esTipoDerecho } from '@/core/context';
+import type { RepositorioAdnMarca, RepositorioDerechos } from '@/core/context';
+import {
+  type AdnEntrada,
+  type AdnMarca,
+  type DerechoContratado,
+  type DerechoEntrada,
+  esTipoDerecho,
+} from '@/core/context';
 
 interface FilaDerecho {
   id: string;
@@ -83,5 +89,71 @@ export class SupabaseRepositorioDerechos implements RepositorioDerechos {
       throw new Error(`No se pudieron guardar los derechos contratados: ${error.message}`);
     }
     return (data as FilaDerecho[]).map(aDominio);
+  }
+}
+
+interface FilaAdn {
+  marca_id: string;
+  propiedad_id: string;
+  valores: string[];
+  tono_voz: string;
+  identidad_visual: string;
+  posicionamiento: string;
+  origen: string;
+  actualizado_en: string;
+}
+
+function adnADominio(f: FilaAdn): AdnMarca {
+  return {
+    marcaId: f.marca_id,
+    propiedadId: f.propiedad_id,
+    valores: f.valores ?? [],
+    tonoVoz: f.tono_voz,
+    identidadVisual: f.identidad_visual,
+    posicionamiento: f.posicionamiento,
+    origen: f.origen === 'borrador-ia' ? 'borrador-ia' : 'editado-usuario',
+    actualizadoEn: f.actualizado_en,
+  };
+}
+
+export class SupabaseRepositorioAdnMarca implements RepositorioAdnMarca {
+  constructor(private readonly supabase: SupabaseClient) {}
+
+  async obtenerAdn(marcaId: MarcaId): Promise<AdnMarca | null> {
+    const { data, error } = await this.supabase
+      .from('adn_marca')
+      .select('*')
+      .eq('marca_id', marcaId)
+      .maybeSingle();
+    if (error) {
+      throw new Error(`No se pudo leer el ADN de marca: ${error.message}`);
+    }
+    return data ? adnADominio(data as FilaAdn) : null;
+  }
+
+  async guardarAdn(
+    marcaId: MarcaId,
+    propiedadId: PropiedadId,
+    entrada: AdnEntrada,
+  ): Promise<AdnMarca> {
+    const fila = {
+      marca_id: marcaId,
+      propiedad_id: propiedadId,
+      valores: entrada.valores,
+      tono_voz: entrada.tonoVoz,
+      identidad_visual: entrada.identidadVisual,
+      posicionamiento: entrada.posicionamiento,
+      origen: entrada.origen,
+      actualizado_en: new Date().toISOString(),
+    };
+    const { data, error } = await this.supabase
+      .from('adn_marca')
+      .upsert(fila, { onConflict: 'marca_id' })
+      .select('*')
+      .single();
+    if (error) {
+      throw new Error(`No se pudo guardar el ADN de marca: ${error.message}`);
+    }
+    return adnADominio(data as FilaAdn);
   }
 }

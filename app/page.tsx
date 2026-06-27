@@ -71,6 +71,9 @@ export default function Home() {
         <Button variant="outline" asChild>
           <a href="/contexto/derechos">Derechos contratados</a>
         </Button>
+        <Button variant="outline" asChild>
+          <a href="/contexto/adn">ADN de marca</a>
+        </Button>
         <Button variant="ghost" asChild>
           <a
             href="https://github.com/sebacifuentes-coder/Sponsorship"
